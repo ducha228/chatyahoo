@@ -26,7 +26,7 @@ import model.User;
 public class MainViewYahoo extends JFrame {
 
 	private JLabel lblAvatar, lblUserName;
-	private JTextField txtStatus, txtSearch;
+	private PlaceholderTextField txtStatus, txtSearch;
 	private JButton btnAddfriend, btnHistory;
 	private JList<String> listFriends;
 	private JLabel lblBanner;
@@ -55,7 +55,7 @@ public class MainViewYahoo extends JFrame {
 
 		// --------------------------------status---------------------------------
 
-		txtStatus = new JTextField();
+		txtStatus = new PlaceholderTextField("What is in your mind");
 		txtStatus.setText("Ban dang nghi gi?");
 		txtStatus.setBounds(80, 40, 150, 30);
 		pnlChat.add(txtStatus);
@@ -72,7 +72,7 @@ public class MainViewYahoo extends JFrame {
 
 		// ------------------------------------search-------------------------------
 
-		txtSearch = new JTextField();
+		txtSearch = new PlaceholderTextField("Type your key here");
 		txtSearch.setBounds(new Rectangle(0, 100, 200, 30));
 		pnlChat.add(txtSearch);
 

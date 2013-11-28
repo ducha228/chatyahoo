@@ -13,13 +13,16 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 
 import model.User;
 
 public class MainChat extends JFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8342601278777698328L;
 	private JLabel lblavataA, lblavataB;
 	private JLabel lblnickNameA, lblBChat;
 	private JTextArea txaChat;

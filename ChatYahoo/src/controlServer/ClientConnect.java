@@ -9,6 +9,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Vector;
 
+import model.ChatHistory;
 import model.Message;
 import model.Setting;
 import model.User;
