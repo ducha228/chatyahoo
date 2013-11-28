@@ -114,6 +114,24 @@ public class ClientConnect extends Thread {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+			case Setting.REQUEST_REGISTER:
+				User u = (User) msg.getObj();
+				boolean b = false;
+				try {
+					b = rmiServer.addNewUser(u);
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				Message response = new Message();
+				response.setType(Setting.RESPONSE_REGISTER);
+				response.setSender(null);
+				response.setRecipient(null);
+				if (b) {
+					response.setObj("Ok");
+				} else
+					response.setObj("Fail");
+				sendMessage(response);
 			default:
 				break;
 			}

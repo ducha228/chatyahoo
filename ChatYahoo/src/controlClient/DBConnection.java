@@ -28,16 +28,4 @@ public class DBConnection {
 		return conn;
 	}
 	
-	public static void addNewUser(User user) {
-		getConn();
-		String sql = "select * from tbluser";
-		try {
-			PreparedStatement pstm = conn.prepareStatement(sql);
-			ResultSet rs = pstm.executeQuery();
-			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	}
+}

@@ -1,0 +1,30 @@
+package controlClient;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Connection;
+
+import model.User;
+import view.RegisterView;
+
+public class RegisterController {
+	public RegisterView rv;
+	public RegisterController(RegisterView rv) {
+		// TODO Auto-generated constructor stub
+		this.rv = rv;
+		this.rv.addRegisterAction(new RegisterListener());
+	}
+	
+	class RegisterListener implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			// TODO Auto-generated method stub
+			User user = rv.getUser();
+			DBConnection.addNewUser(user);
+			
+			
+		}
+		
+	}
+}

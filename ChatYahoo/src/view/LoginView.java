@@ -92,7 +92,7 @@ public class LoginView extends JFrame {
 		btnLogin.addActionListener(act);
 	}
 	
-	public void accActionRegister(ActionListener act) {
+	public void addActionRegister(ActionListener act) {
 		btnRegister.addActionListener(act);
 	}
 	

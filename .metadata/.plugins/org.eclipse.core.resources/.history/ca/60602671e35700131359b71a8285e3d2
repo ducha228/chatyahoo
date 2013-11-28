@@ -1,0 +1,53 @@
+package controlClient;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.sql.Connection;
+
+import javax.swing.JOptionPane;
+
+import model.Message;
+import model.Setting;
+import model.User;
+import view.RegisterView;
+
+public class RegisterController {
+	public RegisterView rv;
+	public RegisterController(RegisterView rv) {
+		// TODO Auto-generated constructor stub
+		this.rv = rv;
+		this.rv.addRegisterAction(new RegisterListener());
+	}
+	
+	class RegisterListener implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			// TODO Auto-generated method stub
+			User user = rv.getUser();
+			try {
+				Socket mySocket = new Socket(Setting.SERVER_HOST,Setting.SERVER_PORT);
+				ObjectOutputStream oos = new ObjectOutputStream(mySocket.getOutputStream());
+				Message message = new Message(Setting.REQUEST_REGISTER, user, null, null);
+				oos.writeObject(obj);
+			} catch (UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			DBConnection.addNewUser(user);
+			int result = rv.showMessage("Congratualation! You have registered successfully!");
+			if (result == JOptionPane.OK_OPTION) {
+				rv.setVisible(false);
+			}
+			
+		}
+		
+	}
+}

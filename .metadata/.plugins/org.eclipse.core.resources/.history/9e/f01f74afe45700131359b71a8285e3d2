@@ -1,0 +1,71 @@
+package controlClient;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import model.User;
+
+public class DBConnection {
+	private static Connection conn;
+	
+	private static void initConn() {
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			conn = DriverManager.getConnection(
+					"jdbc:mysql://localhost:3306/chatdb?characterEncoding=UTF-8", "root", "");
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static Connection getConn(){
+		if(conn == null){
+			initConn();
+		}
+		return conn;
+	}
+	
+	public static void addNewUser(User user) {
+		getConn();
+		String sql = "select * from tbluser order by userid";
+		try {
+			PreparedStatement pstm = conn.prepareStatement(sql);
+			ResultSet rs = pstm.executeQuery();
+			String userid = "X0001";
+			while(rs.next()) {
+				userid = rs.getString("userid");
+			}
+			userid = userid.substring(1, userid.length() - 1);
+			int id = Integer.parseInt(userid);
+			id++;
+			if (id <10) 
+				userid = "X000"+String.valueOf(id);
+			else if (id < 100)
+				userid = "X00"+String.valueOf(id);
+			else if (id < 1000)
+				userid = "X0" +String.valueOf(id);
+			else
+				userid = "X"+String.valueOf(id);
+			
+			sql = "insert into tbluser (userid,username,userpassword,userFirstName,userLastName,userphone,dateOfBirth,gender)"
+					+ " values(?,?,?,?,?,?,?,?)";
+			pstm = conn.prepareStatement(sql);
+			pstm.setString(1, userid);
+			pstm.setString(2, user.getUserName());
+			pstm.setString(3, user.getUserpassword());
+			pstm.setString(4, user.getUserFirstName());
+			pstm.setString(5, user.getUserLastName());
+			pstm.setString(6, user.getUserPhoneNumber());
+			pstm.setString(7, user.getUserDateofBirth());
+			pstm.setInt(8, user.getGender());
+			
+			pstm.execute();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	}

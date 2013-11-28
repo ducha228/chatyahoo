@@ -7,6 +7,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import model.User;
 import controlClient.DBConnection;
@@ -88,11 +89,58 @@ public class RMILoginServerControl extends UnicastRemoteObject implements
 	}
 	public static void main(String[] args) {
 		try {
-			User user = new RMILoginServerControl().searchUser("a");
-			System.out.println(user.getUserDateofBirth());
+			new RMILoginServerControl();
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+	}
+
+	@Override
+	public boolean addNewUser(User user) throws RemoteException {
+		// TODO Auto-generated method stub
+		Connection conn = DBConnection.getConn();
+		String sql = "select * from tbluser order by userid";
+		try {
+			PreparedStatement pstm = conn.prepareStatement(sql);
+			ResultSet rs = pstm.executeQuery();
+			String userid = "X0001";
+			while(rs.next()) {
+				userid = rs.getString("userid");
+			}
+			System.out.println(userid);
+			userid = userid.substring(1, userid.length());
+			System.out.println(userid);
+			int id = Integer.parseInt(userid);
+			id++;
+			System.out.println(id);
+			if (id <10) 
+				userid = "X000"+String.valueOf(id);
+			else if (id < 100)
+				userid = "X00"+String.valueOf(id);
+			else if (id < 1000)
+				userid = "X0" +String.valueOf(id);
+			else
+				userid = "X"+String.valueOf(id);
+			
+			sql = "insert into tbluser (userid,username,userpassword,userFirstName,userLastName,userphone,dateOfBirth,gender)"
+					+ " values(?,?,?,?,?,?,?,?)";
+			pstm = conn.prepareStatement(sql);
+			pstm.setString(1, userid);
+			pstm.setString(2, user.getUserName());
+			pstm.setString(3, user.getUserpassword());
+			pstm.setString(4, user.getUserFirstName());
+			pstm.setString(5, user.getUserLastName());
+			pstm.setString(6, user.getUserPhoneNumber());
+			pstm.setString(7, user.getUserDateofBirth());
+			pstm.setInt(8, user.getGender());
+			
+			return !pstm.execute();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
 	}
 }

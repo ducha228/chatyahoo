@@ -18,6 +18,7 @@ import model.Setting;
 import model.User;
 import view.LoginView;
 import view.MainViewYahoo;
+import view.RegisterView;
 
 public class LoginControl {
 
@@ -54,7 +55,20 @@ public class LoginControl {
 				}
 			}
 		});
+		this.logInView.addActionRegister(new RegisterAction());
 	} 
+	
+	class RegisterAction implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			// TODO Auto-generated method stub
+			RegisterView rv = new RegisterView();
+			rv.setVisible(true);
+			new RegisterController(rv);
+		}
+		
+	}
 	public static void main(String[] args) {
 		LoginView view = new LoginView();
 		new LoginControl(view);

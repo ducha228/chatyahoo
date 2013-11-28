@@ -12,6 +12,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
 
 import model.User;
@@ -164,6 +165,10 @@ public class RegisterView extends JFrame {
 	
 	public void addRegisterAction (ActionListener al) {
 		btnCreate.addActionListener(al);
+	}
+	
+	public int showMessage(String message) {
+		return JOptionPane.showConfirmDialog(null, message, "Register Success", JOptionPane.INFORMATION_MESSAGE);
 	}
 	public static void main(String[] args) {
 		new RegisterView().setVisible(true);
