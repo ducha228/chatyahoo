@@ -98,8 +98,13 @@ public class MainChat extends JFrame {
 		txtInputChat.setText("");
 	}
 	
+	//append vao hop chat
+	public void appendChat(User user,String s) {
+		txaChat.append(user.getUserName() + ": " + s+"\n");
+	}
+	
 	public String getMsg() {
-		return message;
+		return txtInputChat.getText();
 	}
 
 	public User getUserA() {

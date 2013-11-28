@@ -99,15 +99,22 @@ public class ClientConnect extends Thread {
 
 			case Setting.REQUSET_ACCESS_DATABASE:
 				try {
-					User userA = rmiServer.searchUser(String.valueOf(msg.getObj()));
+					User userA = rmiServer.searchUser(String.valueOf(msg
+							.getObj()));
 					System.out.println(userA.getUserName());
-					Message msgFlag = new Message(Setting.RESPONSE_ACCESS_DATABASE,null,null,null);
+					Message msgFlag = new Message(
+							Setting.RESPONSE_ACCESS_DATABASE, null, null, null);
 					sendMessage(msgFlag);
-					Message msgArespone = new Message(Setting.RESPONSE_ACCESS_DATABASE, userA, null, userA.getUserName());
+					Message msgArespone = new Message(
+							Setting.RESPONSE_ACCESS_DATABASE, userA, null,
+							userA.getUserName());
 					sendMessage(msgArespone);
 					Message msgB = readMsg();
-					User userB = rmiServer.searchUser(String.valueOf(msgB.getObj()));
-					Message msgBrespone = new Message(Setting.RESPONSE_ACCESS_DATABASE, userB, null, userA.getUserName());
+					User userB = rmiServer.searchUser(String.valueOf(msgB
+							.getObj()));
+					Message msgBrespone = new Message(
+							Setting.RESPONSE_ACCESS_DATABASE, userB, null,
+							userA.getUserName());
 					sendMessage(msgBrespone);
 					System.out.println(userB.getUserName());
 				} catch (RemoteException e) {
@@ -132,6 +139,22 @@ public class ClientConnect extends Thread {
 				} else
 					response.setObj("Fail");
 				sendMessage(response);
+				break;
+			case Setting.REQUEST_CHAT:
+				try {
+					rmiServer.insertHistory(msg);
+					ChatHistory history = rmiServer.searchHistory(msg);
+					User userA = history.getUserA();
+					User userB = history.getUserB();
+					System.out.println(history.getMessage());
+					Message msgSendUserB = new Message(Setting.RESPONSE_CHAT,
+							history, userA.getUserName(), userB.getUserName());
+					serverTCP.sendtoUser(userB.getUserName(), msgSendUserB);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 			default:
 				break;
 			}

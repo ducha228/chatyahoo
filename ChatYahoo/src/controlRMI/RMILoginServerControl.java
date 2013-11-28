@@ -9,12 +9,18 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import model.ChatHistory;
+import model.Message;
 import model.User;
 import controlClient.DBConnection;
 
 public class RMILoginServerControl extends UnicastRemoteObject implements
 		RMILoginInterface {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7783505611830213L;
 	private int serverPort = 3535;
 	private Registry registry;
 	private String rmiService = "rmitcpLoginServer";
@@ -142,5 +148,66 @@ public class RMILoginServerControl extends UnicastRemoteObject implements
 			e.printStackTrace();
 		}
 		return false;
+	}
+	
+	@Override
+	public ChatHistory searchHistory(Message msg) throws RemoteException {
+		// TODO Auto-generated method stub
+		ChatHistory chatHistory = (ChatHistory) msg.getObj();
+		String sql = "select *from tblchathistory where useridA = ? and useridB = ?";
+		try {
+			Connection conn = DBConnection.getConn();
+			PreparedStatement pre = conn.prepareStatement(sql);
+			pre.setString(1, chatHistory.getUserA().getUserId());
+			pre.setString(2, chatHistory.getUserB().getUserId());
+			ResultSet rs = pre.executeQuery();
+			while (rs.next()) {
+				chatHistory.setId(rs.getString("id"));
+				return chatHistory;
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public String sizeDBChatHistory() {
+		String sql = "select * from tblchathistory";
+		int dem = 0;
+		try {
+			Connection conn = DBConnection.getConn();
+			PreparedStatement pre = conn.prepareStatement(sql);
+
+			ResultSet rs = pre.executeQuery();
+			while (rs.next()) {
+				dem++;
+			}
+
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return String.valueOf(dem);
+	}
+
+	@Override
+	public void insertHistory(Message msg) throws Exception {
+		// TODO Auto-generated method stub
+		String sql = "insert into tblchathistory values (?,?,?,?,?,?)";
+		ChatHistory chat = (ChatHistory) msg.getObj();
+		try {
+			Connection conn = DBConnection.getConn();
+			PreparedStatement pre = conn.prepareStatement(sql);
+			pre.setString(1, sizeDBChatHistory());
+			pre.setString(2, chat.getUserA().getUserId());
+			pre.setString(3, chat.getUserB().getUserId());
+			pre.setString(4, chat.getMessage());
+			pre.setString(5, chat.getTime());
+			pre.setString(6, chat.getUserSender().getUserId());
+			pre.executeUpdate();
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
 	}
 }

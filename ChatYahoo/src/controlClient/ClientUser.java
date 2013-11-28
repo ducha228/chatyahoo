@@ -5,9 +5,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Vector;
 
+import sun.nio.cs.HistoricallyNamedCharset;
 import view.LoginView;
 import view.MainChat;
 import view.MainViewYahoo;
+import model.ChatHistory;
 import model.Message;
 import model.Setting;
 import model.User;
@@ -21,6 +23,7 @@ public class ClientUser extends Thread {
 	MainViewYahoo mainviewYh;
 	MainChat mainChatviewA;
 	MainChat mainChatviewB;
+	public static Vector<ChatHistory> vecChat;
 
 	public ClientUser(ObjectInputStream ois, ObjectOutputStream oos,
 			Message message, LoginView view) {
@@ -29,6 +32,7 @@ public class ClientUser extends Thread {
 		this.oos = oos;
 		this.message = message;
 		this.view = view;
+		vecChat = new Vector<>();
 		this.start();
 	}
 
@@ -55,6 +59,37 @@ public class ClientUser extends Thread {
 		return msg;
 	}
 
+//	------------------------kiem tra xem da hien thi bang chat chua--------------------s--
+	public boolean testChatting(ChatHistory chatHistory) {
+		boolean result = false;
+		for (ChatHistory item : vecChat) {
+			System.out.println(chatHistory.getUserA().getUserName() + "-"
+					+ item.getUserA().getUserName());
+			System.out.println(chatHistory.getUserB().getUserName() + "-"
+					+ item.getUserB().getUserName());
+			if (chatHistory.getUserA().getUserName()
+					.equals(item.getUserA().getUserName())
+					&& chatHistory.getUserB().getUserName()
+							.equals(item.getUserB().getUserName())) {
+				result = true;
+				return result;
+			}
+		}
+		return result;
+	}
+
+//	--------------------------------so sanh viewChat---------------------
+	public boolean testChatView(MainChat view, ChatHistory history) {
+		User userAchat = view.getUserB();
+		System.out.println("userAChat : " + userAchat.getUserName());
+		User userBchat = view.getUserA();
+		User userAhistory = history.getUserA();
+		System.out.println("userAhistory : " + userAhistory.getUserName());
+		User userBhistory = history.getUserB();
+		if(userAchat.getUserName().equals(userAhistory.getUserName()) && userBchat.getUserName().equals(userBhistory.getUserName()))
+			return true;
+		return false;
+	}
 	public void run() {
 		while (true) {
 			Message msg = recieveMsg();
@@ -94,10 +129,42 @@ public class ClientUser extends Thread {
 				Message msgBResponeAcess = recieveMsg();
 				User userAResponeAcess = (User) msgAResponeAcess.getObj();
 				User userBResponeAcess = (User) msgBResponeAcess.getObj();
-				mainChatviewA = new MainChat(userAResponeAcess, userBResponeAcess);
+				mainChatviewA = new MainChat(userAResponeAcess,
+						userBResponeAcess);
 				mainChatviewA.setVisible(true);
-				MainChatControl mainChatcontrolA = new MainChatControl(mainChatviewA, ois, oos);
+				MainChatControl mainChatcontrolA = new MainChatControl(
+						mainChatviewA, ois, oos);
+				ChatHistory chathistory = new ChatHistory();
+				chathistory.setUserA(userBResponeAcess);
+				chathistory.setUserB(userAResponeAcess);
+				if(testChatting(chathistory) == false){
+					vecChat.add(chathistory);
+				}
+				System.out.println("size vecchat = " + vecChat.size());
 				break;
+			case Setting.RESPONSE_CHAT:
+				ChatHistory history = (ChatHistory) msg.getObj();
+				System.out.println(vecChat.size());
+				if (testChatting(history)) {
+					if (testChatView(mainChatviewA, history)) {
+						mainChatviewA.appendChat(history.getUserA(),
+								history.getMessage());
+					} else {
+						mainChatviewB.appendChat(history.getUserA(),
+								history.getMessage());
+					}
+					System.out.println("tung1");
+				} else {
+					vecChat.add(history);
+					mainChatviewB = new MainChat(history.getUserB(),
+							history.getUserA());
+					mainChatviewB.setVisible(true);
+					mainChatviewB.appendChat(history.getUserA(),
+							history.getMessage());
+					MainChatControl mainChatcontrolB = new MainChatControl(
+							mainChatviewB, ois, oos);
+					System.out.println("tung2");
+				}
 			default:
 				break;
 			}

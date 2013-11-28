@@ -45,6 +45,7 @@ public class MainChatControl {
 					ChatHistory history = new ChatHistory(textsend, time, userA, userB, userA);
 					Message msg = new Message(Setting.REQUEST_CHAT, history, userA.getUserName(), userB.getUserName());
 					sendMessage(msg);
+					System.out.println(textsend);
 					System.out.println("chat");
 				}
 			}
