@@ -122,6 +122,7 @@ public class ClientConnect extends Thread {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				break;
 			case Setting.REQUEST_REGISTER:
 				User u = (User) msg.getObj();
 				boolean b = false;
