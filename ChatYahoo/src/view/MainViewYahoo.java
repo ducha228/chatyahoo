@@ -55,8 +55,8 @@ public class MainViewYahoo extends JFrame {
 
 		// --------------------------------status---------------------------------
 
-		txtStatus = new PlaceholderTextField("What is in your mind");
-		txtStatus.setText("Ban dang nghi gi?");
+		txtStatus = new PlaceholderTextField("");
+		txtStatus.setPlaceholder("What is in your mind");
 		txtStatus.setBounds(80, 40, 150, 30);
 		pnlChat.add(txtStatus);
 		txtStatus.setEditable(true);
@@ -73,6 +73,7 @@ public class MainViewYahoo extends JFrame {
 		// ------------------------------------search-------------------------------
 
 		txtSearch = new PlaceholderTextField("Type your key here");
+		txtSearch.setPlaceholder("Type your key here");
 		txtSearch.setBounds(new Rectangle(0, 100, 200, 30));
 		pnlChat.add(txtSearch);
 
