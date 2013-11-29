@@ -134,19 +134,21 @@ public class ClientUser extends Thread {
 				mainChatviewA.setVisible(true);
 				MainChatControl mainChatcontrolA = new MainChatControl(
 						mainChatviewA, ois, oos);
+				System.out.println("userManviewA: "+mainChatviewA.getUserA().getUserName());
 				ChatHistory chathistory = new ChatHistory();
 				chathistory.setUserA(userBResponeAcess);
 				chathistory.setUserB(userAResponeAcess);
 				if(testChatting(chathistory) == false){
 					vecChat.add(chathistory);
 				}
-				System.out.println("size vecchat = " + vecChat.size());
 				break;
 			case Setting.RESPONSE_CHAT:
 				ChatHistory history = (ChatHistory) msg.getObj();
 				System.out.println(vecChat.size());
 				if (testChatting(history)) {
-					if (testChatView(mainChatviewA, history)) {
+					
+					if (mainChatviewB == null) {
+						System.out.println("viewA: "+mainChatviewA.getUserA().getUserName());
 						mainChatviewA.appendChat(history.getUserA(),
 								history.getMessage());
 					} else {

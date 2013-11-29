@@ -76,88 +76,93 @@ public class ClientConnect extends Thread {
 
 	public void run() {
 		while (true) {
-			Message msg = readMsg();
-			int flag = msg.getType();
-			switch (flag) {
-			case Setting.REQUEST_LOGIN:
-				User user = (User) msg.getObj();
-				try {
-					String result = rmiServer.checkLogin(user);
-					if (result.equals("YES")) {
-						serverTCP.hash.put(user.getUserName(), this);
-						System.out.println(serverTCP.getVecOnline().size());
+			try {
+				Message msg = (Message) ois.readObject();
+				int flag = msg.getType();
+				switch (flag) {
+				case Setting.REQUEST_LOGIN:
+					User user = (User) msg.getObj();
+					try {
+						String result = rmiServer.checkLogin(user);
+						if (result.equals("YES")) {
+							serverTCP.hash.put(user.getUserName(), this);
+							System.out.println(serverTCP.getVecOnline().size());
+						}
+						msg.setType(Setting.RESPONSE_LOGIN);
+						sendMessage(msg);
+						sendString(result);
+						serverTCP.sendAllOnline();
+					} catch (RemoteException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
-					msg.setType(Setting.RESPONSE_LOGIN);
-					sendMessage(msg);
-					sendString(result);
-					serverTCP.sendAllOnline();
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 
-				break;
+					break;
 
-			case Setting.REQUSET_ACCESS_DATABASE:
-				try {
-					User userA = rmiServer.searchUser(String.valueOf(msg
-							.getObj()));
-					System.out.println(userA.getUserName());
-					Message msgFlag = new Message(
-							Setting.RESPONSE_ACCESS_DATABASE, null, null, null);
-					sendMessage(msgFlag);
-					Message msgArespone = new Message(
-							Setting.RESPONSE_ACCESS_DATABASE, userA, null,
-							userA.getUserName());
-					sendMessage(msgArespone);
-					Message msgB = readMsg();
-					User userB = rmiServer.searchUser(String.valueOf(msgB
-							.getObj()));
-					Message msgBrespone = new Message(
-							Setting.RESPONSE_ACCESS_DATABASE, userB, null,
-							userA.getUserName());
-					sendMessage(msgBrespone);
-					System.out.println(userB.getUserName());
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				case Setting.REQUSET_ACCESS_DATABASE:
+					try {
+						User userA = rmiServer.searchUser(String.valueOf(msg
+								.getObj()));
+						System.out.println(userA.getUserName());
+						Message msgFlag = new Message(
+								Setting.RESPONSE_ACCESS_DATABASE, null, null, null);
+						sendMessage(msgFlag);
+						Message msgArespone = new Message(
+								Setting.RESPONSE_ACCESS_DATABASE, userA, null,
+								userA.getUserName());
+						sendMessage(msgArespone);
+						Message msgB = readMsg();
+						User userB = rmiServer.searchUser(String.valueOf(msgB
+								.getObj()));
+						Message msgBrespone = new Message(
+								Setting.RESPONSE_ACCESS_DATABASE, userB, null,
+								userA.getUserName());
+						sendMessage(msgBrespone);
+						System.out.println(userB.getUserName());
+					} catch (RemoteException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					break;
+				case Setting.REQUEST_REGISTER:
+					User u = (User) msg.getObj();
+					boolean b = false;
+					try {
+						b = rmiServer.addNewUser(u);
+					} catch (RemoteException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					Message response = new Message();
+					response.setType(Setting.RESPONSE_REGISTER);
+					response.setSender(null);
+					response.setRecipient(null);
+					if (b) {
+						response.setObj("Ok");
+					} else
+						response.setObj("Fail");
+					sendMessage(response);
+					break;
+				case Setting.REQUEST_CHAT:
+					try {
+						rmiServer.insertHistory(msg);
+						ChatHistory history = rmiServer.searchHistory(msg);
+						User userA = history.getUserA();
+						User userB = history.getUserB();
+						Message msgSendUserB = new Message(Setting.RESPONSE_CHAT,
+								history, userA.getUserName(), userB.getUserName());
+						serverTCP.sendtoUser(userB.getUserName(), msgSendUserB);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					break;
+				default:
+					break;
 				}
-				break;
-			case Setting.REQUEST_REGISTER:
-				User u = (User) msg.getObj();
-				boolean b = false;
-				try {
-					b = rmiServer.addNewUser(u);
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				Message response = new Message();
-				response.setType(Setting.RESPONSE_REGISTER);
-				response.setSender(null);
-				response.setRecipient(null);
-				if (b) {
-					response.setObj("Ok");
-				} else
-					response.setObj("Fail");
-				sendMessage(response);
-				break;
-			case Setting.REQUEST_CHAT:
-				try {
-					rmiServer.insertHistory(msg);
-					ChatHistory history = rmiServer.searchHistory(msg);
-					User userA = history.getUserA();
-					User userB = history.getUserB();
-					System.out.println(history.getMessage());
-					Message msgSendUserB = new Message(Setting.RESPONSE_CHAT,
-							history, userA.getUserName(), userB.getUserName());
-					serverTCP.sendtoUser(userB.getUserName(), msgSendUserB);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				break;
-			default:
+			} catch (Exception e) {
+				// TODO: handle exception
+				System.out.println("out");
 				break;
 			}
 		}

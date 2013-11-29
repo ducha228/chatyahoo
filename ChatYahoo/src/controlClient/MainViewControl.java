@@ -2,6 +2,8 @@ package controlClient;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -39,6 +41,11 @@ public class MainViewControl {
 						sendMessage(msgB);
 					}
 				}
+			}
+		});
+		mainviewyh.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
+				System.out.println(1);
 			}
 		});
 	}

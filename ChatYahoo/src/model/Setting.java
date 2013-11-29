@@ -21,6 +21,8 @@ public class Setting implements Serializable{
 	public static final int RESPONSE_ACCESS_DATABASE = 10;
 	public static final int REQUEST_REGISTER = 11;
 	public static final int RESPONSE_REGISTER = 12;
+	public static final int REQUEST_SIGNOUT = 13;
+	public static final int RESPONSE_SIGNOUT = 14;
 	public static final String SERVER_HOST = "localhost";
 	public static final int SERVER_PORT = 2345;
 }
