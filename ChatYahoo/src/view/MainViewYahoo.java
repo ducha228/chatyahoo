@@ -97,6 +97,14 @@ public class MainViewYahoo extends JFrame {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
 	public void addActionListFriend(MouseAdapter act) {
 		listFriends.addMouseListener(act);
 	}

@@ -86,6 +86,15 @@ public class ServerTCPControl {
 		}
 	}
 	
+	public void sendAllUserOffline(User useroff) {
+		Enumeration en = hash.keys();
+		while (en.hasMoreElements()) {
+			String s = (String) en.nextElement();
+			Message msg = new Message(Setting.RESPONSE_USER_OFFLINE, useroff, "", s);
+			hash.get(s).sendMessage(msg);
+		}
+	}
+	
 	public void sendtoUser(String userName, Message msg) {
 		hash.get(userName).sendMessage(msg);
 	}
@@ -96,6 +105,10 @@ public class ServerTCPControl {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void removeUserOut(User out) {
+		hash.remove(out.getUserName());
 	}
 
 	private void listenning() {

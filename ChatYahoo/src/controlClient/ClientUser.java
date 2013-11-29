@@ -5,6 +5,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Vector;
 
+import javax.swing.JOptionPane;
+
 import sun.nio.cs.HistoricallyNamedCharset;
 import view.LoginView;
 import view.MainChat;
@@ -137,19 +139,21 @@ public class ClientUser extends Thread {
 				mainChatviewA.setVisible(true);
 				MainChatControl mainChatcontrolA = new MainChatControl(
 						mainChatviewA, ois, oos);
+				System.out.println("userManviewA: "+mainChatviewA.getUserA().getUserName());
 				ChatHistory chathistory = new ChatHistory();
 				chathistory.setUserA(userBResponeAcess);
 				chathistory.setUserB(userAResponeAcess);
 				if (testChatting(chathistory) == false) {
 					vecChat.add(chathistory);
 				}
-				System.out.println("size vecchat = " + vecChat.size());
 				break;
 			case Setting.RESPONSE_CHAT:
 				ChatHistory history = (ChatHistory) msg.getObj();
 				System.out.println(vecChat.size());
 				if (testChatting(history)) {
-					if (testChatView(mainChatviewA, history)) {
+					
+					if (mainChatviewB == null) {
+						System.out.println("viewA: "+mainChatviewA.getUserA().getUserName());
 						mainChatviewA.appendChat(history.getUserA(),
 								history.getMessage());
 					} else {
@@ -168,6 +172,11 @@ public class ClientUser extends Thread {
 							mainChatviewB, ois, oos);
 					System.out.println("tung2");
 				}
+				break;
+			case Setting.RESPONSE_USER_OFFLINE:
+				User useroff = (User) msg.getObj();
+				JOptionPane.showMessageDialog(null, useroff.getUserName()+" da off line");
+				break;
 			default:
 				break;
 			}
