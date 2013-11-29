@@ -169,6 +169,7 @@ public class ClientUser extends Thread {
 							mainChatviewB, ois, oos);
 					System.out.println("tung2");
 				}
+				break;
 			case Setting.RESPONSE_USER_OFFLINE:
 				User useroff = (User) msg.getObj();
 				JOptionPane.showMessageDialog(null, useroff.getUserName()+" da off line");
