@@ -21,8 +21,8 @@ public class MainViewControl {
 	private ObjectInputStream ois;
 	private ObjectOutputStream oos;
 
-	public MainViewControl(final MainViewYahoo mainviewyh, ObjectInputStream ois,
-			ObjectOutputStream oos) {
+	public MainViewControl(final MainViewYahoo mainviewyh,
+			ObjectInputStream ois, ObjectOutputStream oos) {
 		super();
 		this.mainviewyh = mainviewyh;
 		this.ois = ois;
@@ -35,8 +35,15 @@ public class MainViewControl {
 					if (index >= 0) {
 						Object o = theList.getModel().getElementAt(index);
 						System.out.println("Double-clicked on: " + o.toString());
-						Message msgA = new Message(Setting.REQUSET_ACCESS_DATABASE, mainviewyh.getUserNameA(), mainviewyh.getUserNameA(), mainviewyh.getUserNameA());
-						Message msgB = new Message(Setting.REQUSET_ACCESS_DATABASE, o.toString(), mainviewyh.getUserNameA(), mainviewyh.getUserNameA());
+						Message msgA = new Message(
+								Setting.REQUSET_ACCESS_DATABASE, mainviewyh
+										.getUserNameA(), mainviewyh
+										.getUserNameA(), mainviewyh
+										.getUserNameA());
+						Message msgB = new Message(
+								Setting.REQUSET_ACCESS_DATABASE, o.toString(),
+								mainviewyh.getUserNameA(), mainviewyh
+										.getUserNameA());
 						sendMessage(msgA);
 						sendMessage(msgB);
 					}
@@ -45,11 +52,14 @@ public class MainViewControl {
 		});
 		mainviewyh.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
-				System.out.println(1);
+				User userOut = mainviewyh.getUser();
+				Message msgout = new Message(Setting.REQUEST_SIGNOUT, userOut,
+						userOut.getUserName(), null);
+				sendMessage(msgout);
 			}
 		});
 	}
-	
+
 	public void sendMessage(Message msg) {
 		try {
 			oos.writeObject(msg);
@@ -58,6 +68,7 @@ public class MainViewControl {
 			e.printStackTrace();
 		}
 	}
+
 	public Message recieveMsg() {
 		Message msg = null;
 		try {

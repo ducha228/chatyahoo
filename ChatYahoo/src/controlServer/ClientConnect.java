@@ -157,6 +157,12 @@ public class ClientConnect extends Thread {
 						e.printStackTrace();
 					}
 					break;
+				case Setting.REQUEST_SIGNOUT:
+					User userout = (User) msg.getObj();
+					serverTCP.removeUserOut(userout);
+					serverTCP.sendAllOnline();
+					serverTCP.sendAllUserOffline(userout);
+					break;
 				default:
 					break;
 				}

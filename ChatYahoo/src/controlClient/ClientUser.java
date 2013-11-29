@@ -5,6 +5,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Vector;
 
+import javax.swing.JOptionPane;
+
 import sun.nio.cs.HistoricallyNamedCharset;
 import view.LoginView;
 import view.MainChat;
@@ -167,6 +169,10 @@ public class ClientUser extends Thread {
 							mainChatviewB, ois, oos);
 					System.out.println("tung2");
 				}
+			case Setting.RESPONSE_USER_OFFLINE:
+				User useroff = (User) msg.getObj();
+				JOptionPane.showMessageDialog(null, useroff.getUserName()+" da off line");
+				break;
 			default:
 				break;
 			}
