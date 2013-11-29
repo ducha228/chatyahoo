@@ -193,7 +193,7 @@ public class RMILoginServerControl extends UnicastRemoteObject implements
 	@Override
 	public void insertHistory(Message msg) throws Exception {
 		// TODO Auto-generated method stub
-		String sql = "insert into tblchathistory values (?,?,?,?,?,?)";
+		String sql = "insert into tblchathistory(id,useridA,useridB,message,time,sender) values (?,?,?,?,?,?)";
 		ChatHistory chat = (ChatHistory) msg.getObj();
 		try {
 			Connection conn = DBConnection.getConn();
