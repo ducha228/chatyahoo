@@ -72,7 +72,7 @@ public class MainViewYahoo extends JFrame {
 
 		// ------------------------------------search-------------------------------
 
-		txtSearch = new PlaceholderTextField("Type your key here");
+		txtSearch = new PlaceholderTextField();
 		txtSearch.setPlaceholder("Type your key here");
 		txtSearch.setBounds(new Rectangle(0, 100, 200, 30));
 		pnlChat.add(txtSearch);
