@@ -61,7 +61,8 @@ public class ClientUser extends Thread {
 		return msg;
 	}
 
-//	------------------------kiem tra xem da hien thi bang chat chua--------------------s--
+	// ------------------------kiem tra xem da hien thi bang chat
+	// chua--------------------s--
 	public boolean testChatting(ChatHistory chatHistory) {
 		boolean result = false;
 		for (ChatHistory item : vecChat) {
@@ -80,7 +81,7 @@ public class ClientUser extends Thread {
 		return result;
 	}
 
-//	--------------------------------so sanh viewChat---------------------
+	// --------------------------------so sanh viewChat---------------------
 	public boolean testChatView(MainChat view, ChatHistory history) {
 		User userAchat = view.getUserB();
 		System.out.println("userAChat : " + userAchat.getUserName());
@@ -88,10 +89,12 @@ public class ClientUser extends Thread {
 		User userAhistory = history.getUserA();
 		System.out.println("userAhistory : " + userAhistory.getUserName());
 		User userBhistory = history.getUserB();
-		if(userAchat.getUserName().equals(userAhistory.getUserName()) && userBchat.getUserName().equals(userBhistory.getUserName()))
+		if (userAchat.getUserName().equals(userAhistory.getUserName())
+				&& userBchat.getUserName().equals(userBhistory.getUserName()))
 			return true;
 		return false;
 	}
+
 	public void run() {
 		while (true) {
 			Message msg = recieveMsg();
@@ -140,7 +143,7 @@ public class ClientUser extends Thread {
 				ChatHistory chathistory = new ChatHistory();
 				chathistory.setUserA(userBResponeAcess);
 				chathistory.setUserB(userAResponeAcess);
-				if(testChatting(chathistory) == false){
+				if (testChatting(chathistory) == false) {
 					vecChat.add(chathistory);
 				}
 				break;

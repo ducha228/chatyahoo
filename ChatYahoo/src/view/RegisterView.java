@@ -137,6 +137,7 @@ public class RegisterView extends JFrame {
 		
 		// -----------------
 		this.setContentPane(pnlRegister);
+		this.setLocation(350,150);
 		this.pack();
 		//System.out.println(this.size().width);
 	}

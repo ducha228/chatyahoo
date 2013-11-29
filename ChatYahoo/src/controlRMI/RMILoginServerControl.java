@@ -169,7 +169,7 @@ public class RMILoginServerControl extends UnicastRemoteObject implements
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		return null;
+		return new ChatHistory();
 	}
 
 	public String sizeDBChatHistory() {
