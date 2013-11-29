@@ -151,7 +151,7 @@ public class ClientConnect extends Thread {
 						User userB = history.getUserB();
 						Message msgSendUserB = new Message(Setting.RESPONSE_CHAT,
 								history, userA.getUserName(), userB.getUserName());
-						serverTCP.sendtoUser(userB.getUserName(), msgSendUserB);
+						serverTCP.sendtoUser(msg.getRecipient(), msgSendUserB);
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
