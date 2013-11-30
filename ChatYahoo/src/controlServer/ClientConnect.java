@@ -18,6 +18,7 @@ import model.ChatHistory;
 import model.Message;
 import model.Setting;
 import model.User;
+import controlClient.ImageManager;
 import controlRMI.RMILoginInterface;
 
 public class ClientConnect extends Thread {
@@ -79,32 +80,28 @@ public class ClientConnect extends Thread {
 		}
 	}
 
-//	public Image receiveImage() {
+//	public void receiveImage(String fileName) {
 //		try {
 //			BufferedImage img = ImageIO.read(ImageIO
 //					.createImageInputStream(ois));
-//			Image image = img;
-//			File file = new File(fileName + "." + ext);
-//			BufferedImage image = toBufferedImage(file);
-//			ImageIO.write(image, ext, file);
-//			return image;
+//			
+//			File file = new File(fileName + ".jpg");
+//			ImageIO.write(img, "jpg", file);
 //		} catch (IOException e) {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
-//		return null;
 //	}
-
-	public void sendImage(Image image) {
-		try {
-			BufferedImage bimg = ImageIO.read(new File(
-					"D:\\adi-siddhi\\DSC02503.JPG"));
-			ImageIO.write(bimg, "JPG", oos);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+//
+//	public void sendImage(String fileName) {
+//		try {
+//			BufferedImage bimg = ImageIO.read(new File(fileName + ".jpg"));
+//			ImageIO.write(bimg, "JPG", oos);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
 
 	public void run() {
 		while (true) {
@@ -114,28 +111,17 @@ public class ClientConnect extends Thread {
 				switch (flag) {
 				case Setting.REQUEST_LOGIN:
 					User user = (User) msg.getObj();
-					user = rmiServer.searchUser(user.getUserName());
 					try {
 						String result = rmiServer.checkLogin(user);
 						if (result.equals("YES")) {
-							rmiServer.updateOnl(user, 1);
 							serverTCP.hash.put(user.getUserName(), this);
 							System.out.println(serverTCP.getVecOnline().size());
 						}
 						msg.setType(Setting.RESPONSE_LOGIN);
 						sendMessage(msg);
 						sendString(result);
-						for (String string: serverTCP.getVecOnline()) {
-							Vector<String> vec = new Vector<>();
-							for (String string2 : rmiServer.vecFriend(rmiServer.searchUser(string))) {
-								if (rmiServer.searchUser(string2).getIsOnline() == 0) {
-									vec.add(string2 + "       -        offline"); 
-								} else {
-									vec.add(string2 + "       -        online");
-								}
-							}
-							serverTCP.sendtoUser(string, new Message(Setting.RESPNONSE_ALL_ONLINE, vec, null, null));
-						}
+						serverTCP.sendAllOnline();
+						
 					} catch (RemoteException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -143,7 +129,7 @@ public class ClientConnect extends Thread {
 
 					break;
 
-				case Setting.REQUSET_ACCESS_DATABASE:
+				case Setting.REQUEST_ACCESS_DATABASE:
 					try {
 						User userA = rmiServer.searchUser(String.valueOf(msg
 								.getObj()));
@@ -205,46 +191,38 @@ public class ClientConnect extends Thread {
 					break;
 				case Setting.REQUEST_SIGNOUT:
 					User userout = (User) msg.getObj();
-					userout = rmiServer.searchUser(userout.getUserName());
-					rmiServer.updateOnl(userout, 0);
-					for (String string: serverTCP.getVecOnline()) {
-						Vector<String> vec = new Vector<>();
-						for (String string2 : rmiServer.vecFriend(rmiServer.searchUser(string))) {
-							if (rmiServer.searchUser(string2).getIsOnline() == 0) {
-								vec.add(string2 + "       -        offline"); 
-							} else {
-								vec.add(string2 + "       -        online");
-							}
-						}
-						serverTCP.sendtoUser(string, new Message(Setting.RESPNONSE_ALL_ONLINE, vec, null, null));
-					}
+					serverTCP.removeUserOut(userout);
+					serverTCP.sendAllOnline();
 					serverTCP.sendAllUserOffline(userout);
 					break;
-				case Setting.REQUEST_ADDFRIEND:
-					String userNameUserSend = (String) msg.getSender();
-					String userNameFriendAdd = (String) msg.getObj();
-					
-					if (rmiServer.searchUser(userNameFriendAdd) == null) {
-						String result = "NO";
-						serverTCP.sendtoUser(msg.getSender(), new Message(Setting.RESPONSE_ADDFRIEND, result, null, userNameUserSend));
+				case Setting.REQUEST_AVATAR:
+					user = (User) msg.getObj();
+					Message avatarMessage = new Message();
+					avatarMessage.setType(Setting.RESPONSE_AVATAR);
+					File file = new File(user.getUserName() + ".jpg");
+					BufferedImage bimg = null; 
+					if (file.exists()) {
+						bimg = ImageIO.read(new File(user.getUserName() + ".jpg"));
+						avatarMessage.setObj(ImageManager.encodeToString(bimg, "jpg"));
+					} else {
+						avatarMessage.setObj("NO_IMG");
 					}
-					else{
-						serverTCP.sendtoUser(userNameFriendAdd, new Message(Setting.REQUEST_ACCEPTADDFRIEND, msg, userNameUserSend, userNameFriendAdd));
-					}
+					avatarMessage.setSender(msg.getSender());
+					avatarMessage.setRecipient(msg.getRecipient());
+					sendMessage(avatarMessage);
 					break;
-				case Setting.RESPONSE_DECLINEADDFRIEND:
-					serverTCP.sendtoUser(msg.getRecipient(), msg);
-					break;
-				case Setting.RESPONSE_ACCEPTADDFRIEND:
-					rmiServer.insertFriendList(msg);
-					serverTCP.sendtoUser(msg.getRecipient(), msg);
+				case Setting.REQUEST_UPLOAD_IMAGE:
+					String imagestr = (String) msg.getObj();
+					BufferedImage bufferedImage = ImageManager.decodeToImage(imagestr);
+					File file2 = new File(msg.getSender() + ".jpg");
+					ImageIO.write(bufferedImage, "jpg", file2);
 					break;
 				default:
 					break;
 				}
 			} catch (Exception e) {
 				// TODO: handle exception
-				System.out.println("out");
+				System.out.println(e.toString());
 				break;
 			}
 		}

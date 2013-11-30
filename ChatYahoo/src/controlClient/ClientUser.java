@@ -117,27 +117,28 @@ public class ClientUser extends Thread {
 		return false;
 	}
 
-	public Image receiveImage() {
-		try {
-			BufferedImage img = ImageIO.read(ImageIO.createImageInputStream(ois));
-			Image image = img;
-			return image;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
-	public void sendImage(Image image) {
-		try {
-			BufferedImage bimg = ImageIO.read(new File("D:\\adi-siddhi\\DSC02503.JPG"));
-			ImageIO.write(bimg,"JPG",oos);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+//	public void receiveImage(String fileName) {
+//		try {
+//			BufferedImage img = ImageIO.read(ImageIO
+//					.createImageInputStream(ois));
+//			
+//			File file = new File(fileName + ".jpg");
+//			ImageIO.write(img, "jpg", file);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
+//
+//	public void sendImage(String fileName) {
+//		try {
+//			BufferedImage bimg = ImageIO.read(new File(fileName + ".jpg"));
+//			ImageIO.write(bimg, "JPG", oos);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
 	public void run() {
 		while (true) {
 			Message msg = recieveMsg();
@@ -159,14 +160,29 @@ public class ClientUser extends Thread {
 
 					Object obj = msg.getObj();
 					User user = (User) obj;
-					Image avatar = receiveImage();
-					mainviewYh = new MainViewYahoo(user,avatar);
+					
+					mainviewYh = new MainViewYahoo(user);
+					
 					mainviewYh.setVisible(true);
 					MainViewControl mvcontrol = new MainViewControl(mainviewYh,
 							ois, oos);
 					view.setVisible(false);
+					Message message = new Message(Setting.REQUEST_AVATAR, user, user.getUserName(), null);
+					System.out.println("Request avatar successfully");
+					sendMessage(message);
 				} else {
 					view.showMessage("tai khoan khong hop le");
+				}
+				break;
+			case Setting.RESPONSE_AVATAR:
+				System.out.println("Response avatar successfully");
+				String imageStr = (String) msg.getObj();
+				System.out.println(imageStr);
+				if (!imageStr.equals("NO_IMG")) {
+					BufferedImage avatar = ImageManager.decodeToImage(imageStr);
+					mainviewYh.setAvatar(avatar);
+				} else {
+					mainviewYh.setDefaultAvatar();
 				}
 				break;
 			case Setting.RESPNONSE_ALL_ONLINE:
