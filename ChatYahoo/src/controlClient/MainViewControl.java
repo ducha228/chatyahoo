@@ -9,6 +9,7 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.StringTokenizer;
 
 import javax.swing.JList;
 
@@ -43,8 +44,14 @@ public class MainViewControl {
 										.getUserNameA(), mainviewyh
 										.getUserNameA(), mainviewyh
 										.getUserNameA());
+						StringTokenizer strt = new StringTokenizer(o.toString(), " ");
+						String userName = "";
+						while (strt.hasMoreElements()) {
+							userName = strt.nextToken();
+							break;
+						}
 						Message msgB = new Message(
-								Setting.REQUSET_ACCESS_DATABASE, o.toString(),
+								Setting.REQUSET_ACCESS_DATABASE, userName,
 								mainviewyh.getUserNameA(), mainviewyh
 										.getUserNameA());
 						sendMessage(msgA);

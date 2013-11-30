@@ -2,6 +2,7 @@ package controlRMI;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.Vector;
 
 import model.ChatHistory;
 import model.Message;
@@ -14,5 +15,7 @@ public interface RMILoginInterface extends Remote{
 	public boolean addNewUser(User user) throws RemoteException;
 	public ChatHistory searchHistory(Message msg) throws RemoteException;
 	public void insertHistory(Message msg) throws Exception;
-	public String insertFriendList(Message msg) throws Exception;
+	public void insertFriendList(Message msg) throws Exception;
+	public Vector<String> vecFriend(User user) throws RemoteException;
+	public void	updateOnl(User user,int isOnline) throws RemoteException;
 }

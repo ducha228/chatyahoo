@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Vector;
 
 import model.ChatHistory;
 import model.Message;
@@ -229,12 +230,13 @@ public class RMILoginServerControl extends UnicastRemoteObject implements
 	}
 
 	@Override
-	public String insertFriendList(Message msg) throws Exception {
+	public void insertFriendList(Message msg) throws Exception {
 		// TODO Auto-generated method stub
-		String strUserAdd = (String) msg.getObj();
+		Message tmp = (Message) msg.getObj();
+		Message tmp1 = (Message) tmp.getObj();
+		System.out.println(tmp.getObj());
+		String strUserAdd = (String) tmp1.getSender();
 		String strUserWanttoAdd = msg.getSender();
-		if(searchUser(strUserAdd) == null)
-			return "NO";
 		User userAdd = searchUser(strUserAdd);
 		User userWanttoAdd = searchUser(strUserWanttoAdd);
 		String sql = "insert into tblfriendlist(id,useridA,useridB,displayNameA,displayNameB,isAOnline,isBOnline) values(?,?,?,?,?,?,?)";
@@ -242,17 +244,65 @@ public class RMILoginServerControl extends UnicastRemoteObject implements
 			Connection conn = DBConnection.getConn();
 			PreparedStatement pre = conn.prepareStatement(sql);
 			pre.setString(1, sizeListFriend());
-			pre.setString(2, userWanttoAdd.getUserId());
-			pre.setString(3, userAdd.getUserId());
+			pre.setString(3, userWanttoAdd.getUserId());
+			pre.setString(2, userAdd.getUserId());
 			pre.setString(4, userWanttoAdd.getUserName());
 			pre.setString(5, userAdd.getUserName());
 			pre.setInt(6, 1);
 			pre.setInt(7, 1);
 			pre.executeUpdate();
-			return "YES";
 		} catch (Exception e) {
 			// TODO: handle exception
+			e.printStackTrace();
 		}
-		return null;
+	}
+
+	@Override
+	public Vector<String> vecFriend(User user) throws RemoteException {
+		// TODO Auto-generated method stub
+		Vector<String> vec = new Vector<>();
+		String sql = "select * from tbluser where userid in (select useridB from tblfriendlist where useridA = ?)";
+		try {
+			Connection conn = DBConnection.getConn();
+			PreparedStatement pre = conn.prepareStatement(sql);
+			pre.setString(1, user.getUserId());
+			ResultSet rs = pre.executeQuery();
+			while (rs.next()) {
+				vec.add(rs.getString(2));
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		String sql1 = "select * from tbluser where userid in (select useridA from tblfriendlist where useridB = ?)";
+		try {
+			Connection conn = DBConnection.getConn();
+			PreparedStatement pre = conn.prepareStatement(sql1);
+			pre.setString(1, user.getUserId());
+			ResultSet rs = pre.executeQuery();
+			while (rs.next()) {
+				vec.add(rs.getString(2));
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return vec;
+	}
+
+	@Override
+	public void updateOnl(User user, int isOnline) throws RemoteException {
+		// TODO Auto-generated method stub
+		String sql = "update tbluser set isOnline = ? where userid = ?";
+		try {
+			Connection con = DBConnection.getConn();
+			PreparedStatement pre = con.prepareStatement(sql);
+			pre.setInt(1, isOnline);
+			pre.setString(2, user.getUserId());
+			pre.executeUpdate();
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
 	}
 }

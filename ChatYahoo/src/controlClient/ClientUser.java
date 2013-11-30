@@ -57,13 +57,18 @@ public class ClientUser extends Thread {
 
 	public boolean testMainChatandHistory(ChatHistory history, MainChat view) {
 		User userBMainChat = view.getUserB();
-		if(history.getUserSender().getUserName().equals(userBMainChat.getUserName()))
+		System.out.println("UserBMainchat " + userBMainChat.getUserName());
+		System.out.println("UserSender " + history.getUserSender().getUserName());
+		if(history.getUserSender().getUserName().equals(userBMainChat.getUserName())){
+			System.out.println("UserBMainchat " + userBMainChat.getUserName());
+			System.out.println("UserSender " + history.getUserSender().getUserName());
 			return true;
+		}
 		return false;
 	}
 	public MainChat searchMainChat(ChatHistory hitorytmp, Vector<MainChat> vec) {
 		for (MainChat view : vec) {
-			if(testMainChatandHistory(hitorytmp, view));
+			if(testMainChatandHistory(hitorytmp, view))
 			return view;
 		}
 		return null;
@@ -220,6 +225,27 @@ public class ClientUser extends Thread {
 			case Setting.RESPONSE_USER_OFFLINE:
 				User useroff = (User) msg.getObj();
 				JOptionPane.showMessageDialog(null, useroff.getUserName()+" da off line");
+				break;
+			case Setting.RESPONSE_ADDFRIEND:
+				String resultadd = (String) msg.getObj();
+				if (resultadd.equals("NO")) {
+					JOptionPane.showMessageDialog(null, "khong tim thay nguoi co user nay");
+				}
+				break; 
+			case Setting.REQUEST_ACCEPTADDFRIEND:
+				int dialogButton = JOptionPane.YES_NO_OPTION;
+				int dialogResult = JOptionPane.showConfirmDialog(null, "Bạn nhận được thông báo kết bạn từ " + msg.getSender(),
+						"Title on Box", dialogButton);
+				if (dialogResult == 0)
+					sendMessage(new Message(Setting.RESPONSE_ACCEPTADDFRIEND, msg, msg.getRecipient(), msg.getSender()));
+				else
+					sendMessage(new Message(Setting.RESPONSE_DECLINEADDFRIEND, msg, msg.getRecipient(), msg.getSender()));
+				break;
+			case Setting.RESPONSE_DECLINEADDFRIEND:
+				JOptionPane.showMessageDialog(null, msg.getSender() + " từ chối lời mời kết bạn");
+				break;
+			case Setting.RESPONSE_ACCEPTADDFRIEND:
+				JOptionPane.showMessageDialog(null, msg.getSender() + " đồng ý lời mời kết bạn");
 				break;
 			default:
 				break;
