@@ -62,7 +62,7 @@ public class RMILoginServerControl extends UnicastRemoteObject implements
 	public User searchUser(String userName) throws RemoteException {
 		// TODO Auto-generated method stub
 		User user = new User();
-		String  sql = "select * from tbluser where username = ?";
+		String sql = "select * from tbluser where username = ?";
 		Connection conn = DBConnection.getConn();
 		try {
 			PreparedStatement pre = conn.prepareStatement(sql);
@@ -90,9 +90,10 @@ public class RMILoginServerControl extends UnicastRemoteObject implements
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
+
 	public static void main(String[] args) {
 		try {
 			new RMILoginServerControl();
@@ -112,7 +113,7 @@ public class RMILoginServerControl extends UnicastRemoteObject implements
 			PreparedStatement pstm = conn.prepareStatement(sql);
 			ResultSet rs = pstm.executeQuery();
 			String userid = "X0001";
-			while(rs.next()) {
+			while (rs.next()) {
 				userid = rs.getString("userid");
 			}
 			System.out.println(userid);
@@ -121,15 +122,15 @@ public class RMILoginServerControl extends UnicastRemoteObject implements
 			int id = Integer.parseInt(userid);
 			id++;
 			System.out.println(id);
-			if (id <10) 
-				userid = "X000"+String.valueOf(id);
+			if (id < 10)
+				userid = "X000" + String.valueOf(id);
 			else if (id < 100)
-				userid = "X00"+String.valueOf(id);
+				userid = "X00" + String.valueOf(id);
 			else if (id < 1000)
-				userid = "X0" +String.valueOf(id);
+				userid = "X0" + String.valueOf(id);
 			else
-				userid = "X"+String.valueOf(id);
-			
+				userid = "X" + String.valueOf(id);
+
 			sql = "insert into tbluser (userid,username,userpassword,userFirstName,userLastName,userphone,dateOfBirth,gender)"
 					+ " values(?,?,?,?,?,?,?,?)";
 			pstm = conn.prepareStatement(sql);
@@ -141,7 +142,7 @@ public class RMILoginServerControl extends UnicastRemoteObject implements
 			pstm.setString(6, user.getUserPhoneNumber());
 			pstm.setString(7, user.getUserDateofBirth());
 			pstm.setInt(8, user.getGender());
-			
+
 			return !pstm.execute();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -149,7 +150,7 @@ public class RMILoginServerControl extends UnicastRemoteObject implements
 		}
 		return false;
 	}
-	
+
 	@Override
 	public ChatHistory searchHistory(Message msg) throws RemoteException {
 		// TODO Auto-generated method stub
@@ -209,5 +210,49 @@ public class RMILoginServerControl extends UnicastRemoteObject implements
 			// TODO: handle exception
 			e.printStackTrace();
 		}
+	}
+
+	public String sizeListFriend() {
+		int dem = 0;
+		String sql = "select * from tblfriendlist";
+		try {
+			Connection con = DBConnection.getConn();
+			PreparedStatement pre = con.prepareStatement(sql);
+			ResultSet rs = pre.executeQuery();
+			while (rs.next()) {
+				dem++;
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return String.valueOf(dem);
+	}
+
+	@Override
+	public String insertFriendList(Message msg) throws Exception {
+		// TODO Auto-generated method stub
+		String strUserAdd = (String) msg.getObj();
+		String strUserWanttoAdd = msg.getSender();
+		if(searchUser(strUserAdd) == null)
+			return "NO";
+		User userAdd = searchUser(strUserAdd);
+		User userWanttoAdd = searchUser(strUserWanttoAdd);
+		String sql = "insert into tblfriendlist(id,useridA,useridB,displayNameA,displayNameB,isAOnline,isBOnline) values(?,?,?,?,?,?,?)";
+		try {
+			Connection conn = DBConnection.getConn();
+			PreparedStatement pre = conn.prepareStatement(sql);
+			pre.setString(1, sizeListFriend());
+			pre.setString(2, userWanttoAdd.getUserId());
+			pre.setString(3, userAdd.getUserId());
+			pre.setString(4, userWanttoAdd.getUserName());
+			pre.setString(5, userAdd.getUserName());
+			pre.setInt(6, 1);
+			pre.setInt(7, 1);
+			pre.executeUpdate();
+			return "YES";
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return null;
 	}
 }

@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -46,7 +47,7 @@ public class MainViewYahoo extends JFrame {
 
 		lblAvatar = new JLabel();
 		lblAvatar.setBounds(25, 10, 50, 50);
-		lblAvatar.setIcon(new ImageIcon(avatar));
+		lblAvatar.setIcon(new ImageIcon("avatar.jpg"));
 		pnlChat.add(lblAvatar);
 
 		lblUserName = new JLabel(user.getUserName());
@@ -76,11 +77,11 @@ public class MainViewYahoo extends JFrame {
 
 		txtSearch = new PlaceholderTextField();
 		txtSearch.setPlaceholder("Type your key here");
-		txtSearch.setBounds(new Rectangle(0, 100, 200, 30));
+		txtSearch.setBounds(new Rectangle(0, 100, 150, 30));
 		pnlChat.add(txtSearch);
 
 		btnAddfriend = new JButton("Add");
-		btnAddfriend.setBounds(new Rectangle(200, 100, 50, 30));
+		btnAddfriend.setBounds(new Rectangle(150, 100, 100, 30));
 		pnlChat.add(btnAddfriend);
 
 		dlm = new DefaultListModel<>();
@@ -107,6 +108,9 @@ public class MainViewYahoo extends JFrame {
 		this.user = user;
 	}
 
+	public void addFriendAction(ActionListener act) {
+		btnAddfriend.addActionListener(act);
+	}
 	public void addActionListFriend(MouseAdapter act) {
 		listFriends.addMouseListener(act);
 	}

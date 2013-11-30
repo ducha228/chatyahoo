@@ -79,21 +79,21 @@ public class ClientConnect extends Thread {
 		}
 	}
 
-	public Image receiveImage() {
-		try {
-			BufferedImage img = ImageIO.read(ImageIO
-					.createImageInputStream(ois));
-			Image image = img;
-			File file = new File(fileName + "." + ext);
-			BufferedImage image = toBufferedImage(file);
-			ImageIO.write(image, ext, file);
-			return image;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
-	}
+//	public Image receiveImage() {
+//		try {
+//			BufferedImage img = ImageIO.read(ImageIO
+//					.createImageInputStream(ois));
+//			Image image = img;
+//			File file = new File(fileName + "." + ext);
+//			BufferedImage image = toBufferedImage(file);
+//			ImageIO.write(image, ext, file);
+//			return image;
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		return null;
+//	}
 
 	public void sendImage(Image image) {
 		try {
@@ -196,6 +196,9 @@ public class ClientConnect extends Thread {
 					serverTCP.removeUserOut(userout);
 					serverTCP.sendAllOnline();
 					serverTCP.sendAllUserOffline(userout);
+					break;
+				case Setting.REQUEST_ADDFRIEND:
+					
 					break;
 				default:
 					break;

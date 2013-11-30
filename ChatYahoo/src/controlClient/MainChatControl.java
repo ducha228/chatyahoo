@@ -36,7 +36,6 @@ public class MainChatControl {
 					User userA = view.getUserA();
 					User userB = view.getUserB();
 					String textsend = view.getMsg();
-					view.updateEnter();
 					Calendar cal = Calendar.getInstance();
 			    	cal.getTime();
 			    	SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
@@ -47,6 +46,8 @@ public class MainChatControl {
 					sendMessage(msg);
 					System.out.println(textsend);
 					System.out.println("chat");
+					view.updateEnter();
+
 				}
 			}
 		});

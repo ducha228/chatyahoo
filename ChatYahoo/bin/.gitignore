@@ -1,5 +1,6 @@
+/.gitignore
 /controlClient
+/controlRMI
 /controlServer
 /model
 /view
-/controlRMI

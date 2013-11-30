@@ -29,6 +29,8 @@ public class ClientUser extends Thread {
 	MainViewYahoo mainviewYh;
 	MainChat mainChatviewA;
 	MainChat mainChatviewB;
+	Vector<MainChat> vecMainchatA;
+	Vector<MainChat> vecMainChatB;
 	public static Vector<ChatHistory> vecChat;
 
 	public ClientUser(ObjectInputStream ois, ObjectOutputStream oos,
@@ -39,6 +41,8 @@ public class ClientUser extends Thread {
 		this.message = message;
 		this.view = view;
 		vecChat = new Vector<>();
+		vecMainchatA = new Vector<>();
+		vecMainChatB = new Vector<>();
 		this.start();
 	}
 
@@ -51,6 +55,19 @@ public class ClientUser extends Thread {
 		}
 	}
 
+	public boolean testMainChatandHistory(ChatHistory history, MainChat view) {
+		User userBMainChat = view.getUserB();
+		if(history.getUserSender().getUserName().equals(userBMainChat.getUserName()))
+			return true;
+		return false;
+	}
+	public MainChat searchMainChat(ChatHistory hitorytmp, Vector<MainChat> vec) {
+		for (MainChat view : vec) {
+			if(testMainChatandHistory(hitorytmp, view));
+			return view;
+		}
+		return null;
+	}
 	public Message recieveMsg() {
 		Message msg = null;
 		try {
@@ -70,10 +87,6 @@ public class ClientUser extends Thread {
 	public boolean testChatting(ChatHistory chatHistory) {
 		boolean result = false;
 		for (ChatHistory item : vecChat) {
-			System.out.println(chatHistory.getUserA().getUserName() + "-"
-					+ item.getUserA().getUserName());
-			System.out.println(chatHistory.getUserB().getUserName() + "-"
-					+ item.getUserB().getUserName());
 			if (chatHistory.getUserA().getUserName()
 					.equals(item.getUserA().getUserName())
 					&& chatHistory.getUserB().getUserName()
@@ -165,6 +178,11 @@ public class ClientUser extends Thread {
 				mainChatviewA.setVisible(true);
 				MainChatControl mainChatcontrolA = new MainChatControl(
 						mainChatviewA, ois, oos);
+				System.out.println("size Vec = " + vecMainchatA.size());
+				vecMainchatA.add(mainChatviewA);
+				for (MainChat view : vecMainchatA){
+					System.out.println(view.getUserB().getUserName());
+				}
 				System.out.println("userManviewA: "+mainChatviewA.getUserA().getUserName());
 				ChatHistory chathistory = new ChatHistory();
 				chathistory.setUserA(userBResponeAcess);
@@ -179,8 +197,8 @@ public class ClientUser extends Thread {
 				if (testChatting(history)) {
 					
 					if (mainChatviewB == null) {
-						System.out.println("viewA: "+mainChatviewA.getUserA().getUserName());
-						mainChatviewA.appendChat(history.getUserA(),
+						MainChat mainA = searchMainChat(history, vecMainchatA);
+						mainA.appendChat(history.getUserA(),
 								history.getMessage());
 					} else {
 						mainChatviewB.appendChat(history.getUserA(),

@@ -1,5 +1,7 @@
 package controlClient;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -13,6 +15,7 @@ import javax.swing.JList;
 import model.Message;
 import model.Setting;
 import model.User;
+import view.AddFriend;
 import view.MainViewYahoo;
 
 public class MainViewControl {
@@ -22,7 +25,7 @@ public class MainViewControl {
 	private ObjectOutputStream oos;
 
 	public MainViewControl(final MainViewYahoo mainviewyh,
-			ObjectInputStream ois, ObjectOutputStream oos) {
+			final ObjectInputStream ois, final ObjectOutputStream oos) {
 		super();
 		this.mainviewyh = mainviewyh;
 		this.ois = ois;
@@ -48,6 +51,16 @@ public class MainViewControl {
 						sendMessage(msgB);
 					}
 				}
+			}
+		});
+		mainviewyh.addFriendAction(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				AddFriend viewaddfriend = new AddFriend(mainviewyh.getUser());
+				AddFriendColtrol controlAddfriend = new AddFriendColtrol(viewaddfriend, ois, oos);
+				viewaddfriend.setVisible(true);
 			}
 		});
 		mainviewyh.addWindowListener(new WindowAdapter() {
