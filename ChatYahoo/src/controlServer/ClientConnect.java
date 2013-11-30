@@ -18,6 +18,7 @@ import model.ChatHistory;
 import model.Message;
 import model.Setting;
 import model.User;
+import controlClient.ImageManager;
 import controlRMI.RMILoginInterface;
 
 public class ClientConnect extends Thread {
@@ -79,32 +80,28 @@ public class ClientConnect extends Thread {
 		}
 	}
 
-	public Image receiveImage() {
-		try {
-			BufferedImage img = ImageIO.read(ImageIO
-					.createImageInputStream(ois));
-			Image image = img;
-			File file = new File(fileName + "." + ext);
-			BufferedImage image = toBufferedImage(file);
-			ImageIO.write(image, ext, file);
-			return image;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	public void sendImage(Image image) {
-		try {
-			BufferedImage bimg = ImageIO.read(new File(
-					"D:\\adi-siddhi\\DSC02503.JPG"));
-			ImageIO.write(bimg, "JPG", oos);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+//	public void receiveImage(String fileName) {
+//		try {
+//			BufferedImage img = ImageIO.read(ImageIO
+//					.createImageInputStream(ois));
+//			
+//			File file = new File(fileName + ".jpg");
+//			ImageIO.write(img, "jpg", file);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
+//
+//	public void sendImage(String fileName) {
+//		try {
+//			BufferedImage bimg = ImageIO.read(new File(fileName + ".jpg"));
+//			ImageIO.write(bimg, "JPG", oos);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
 
 	public void run() {
 		while (true) {
@@ -124,6 +121,7 @@ public class ClientConnect extends Thread {
 						sendMessage(msg);
 						sendString(result);
 						serverTCP.sendAllOnline();
+						
 					} catch (RemoteException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -131,7 +129,7 @@ public class ClientConnect extends Thread {
 
 					break;
 
-				case Setting.REQUSET_ACCESS_DATABASE:
+				case Setting.REQUEST_ACCESS_DATABASE:
 					try {
 						User userA = rmiServer.searchUser(String.valueOf(msg
 								.getObj()));
@@ -197,6 +195,15 @@ public class ClientConnect extends Thread {
 					serverTCP.sendAllOnline();
 					serverTCP.sendAllUserOffline(userout);
 					break;
+				case Setting.REQUEST_AVATAR:
+					user = (User) msg.getObj();
+					Message avatarMessage = new Message();
+					avatarMessage.setType(Setting.RESPONSE_AVATAR);
+					BufferedImage bimg = ImageIO.read(new File(user.getUserName() + ".jpg"));
+					avatarMessage.setObj(ImageManager.encodeToString(bimg, "jpg"));
+					avatarMessage.setSender(msg.getSender());
+					avatarMessage.setRecipient(msg.getRecipient());
+					sendMessage(avatarMessage);
 				default:
 					break;
 				}

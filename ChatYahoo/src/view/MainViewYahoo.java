@@ -7,12 +7,17 @@ import java.awt.Rectangle;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
+import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.Vector;
 
+import javax.activation.MimetypesFileTypeMap;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -21,6 +26,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import model.User;
 
@@ -34,11 +41,10 @@ public class MainViewYahoo extends JFrame {
 	private DefaultListModel dlm;
 	private User user;
 	private Image avatar;
-	public MainViewYahoo(User user,Image avatar) {
+	public MainViewYahoo(User user) {
 		// TODO Auto-generated constructor stub
 		super("ChatOnline");
 		this.user = user;
-		this.avatar = avatar;
 		MyPanel pnlChat = new MyPanel("backgroundview.jpg");
 		pnlChat.setPreferredSize(new Dimension(250, 500));
 
@@ -46,7 +52,6 @@ public class MainViewYahoo extends JFrame {
 
 		lblAvatar = new JLabel();
 		lblAvatar.setBounds(25, 10, 50, 50);
-		lblAvatar.setIcon(new ImageIcon(avatar));
 		pnlChat.add(lblAvatar);
 
 		lblUserName = new JLabel(user.getUserName());
@@ -113,7 +118,35 @@ public class MainViewYahoo extends JFrame {
 	public void addUsertoListFriends(String userName) {
 		dlm.addElement(userName);
 	}
+	public void addChooseAvatar(MouseListener ml) {
+		lblAvatar.addMouseListener(ml);
+	}
 	
+	public File showAvatarChooser() {
+		JFileChooser filechooser = new JFileChooser();
+//		filechooser.addChoosableFileFilter(new FileNameExtensionFilter("Images",
+//				"jpg", "png", "gif", "bmp"));
+		int returnVal = filechooser.showOpenDialog(MainViewYahoo.this);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			File file = filechooser.getSelectedFile();
+//			String mimeType = new MimetypesFileTypeMap().getContentType(file);
+//			   // mimeType should now be something like "image/png"
+//
+//			   if(mimeType.substring(0,5).equalsIgnoreCase("image")){
+//			         // its an image
+//				   return file;
+//			   } else {
+//				   showAvatarChooser();
+//			   }
+			return file;
+		}
+		return null;
+	}
+	
+	public void setAvatar(BufferedImage avatar) {
+		lblAvatar.setIcon(new ImageIcon(avatar));
+		
+	}
 	public String getUserNameA() {
 		return lblUserName.getText();
 	}
@@ -122,5 +155,26 @@ public class MainViewYahoo extends JFrame {
 		for (String string : vec) {
 			dlm.addElement(string);
 		}
+	}
+	
+	class FileTypeFilter extends FileFilter {
+	    private String extension;
+	    private String description;
+	 
+	    public FileTypeFilter(String extension, String description) {
+	        this.extension = extension;
+	        this.description = description;
+	    }
+	 
+	    public boolean accept(File file) {
+	        if (file.isDirectory()) {
+	            return true;
+	        }
+	        return file.getName().endsWith(extension);
+	    }
+	 
+	    public String getDescription() {
+	        return description + String.format(" (*%s)", extension);
+	    }
 	}
 }

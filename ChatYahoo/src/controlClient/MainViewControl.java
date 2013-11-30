@@ -2,17 +2,25 @@ package controlClient;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import javax.imageio.ImageIO;
 import javax.swing.JList;
 
 import model.Message;
 import model.Setting;
 import model.User;
+import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
 import view.MainViewYahoo;
 
 public class MainViewControl {
@@ -36,12 +44,12 @@ public class MainViewControl {
 						Object o = theList.getModel().getElementAt(index);
 						System.out.println("Double-clicked on: " + o.toString());
 						Message msgA = new Message(
-								Setting.REQUSET_ACCESS_DATABASE, mainviewyh
+								Setting.REQUEST_ACCESS_DATABASE, mainviewyh
 										.getUserNameA(), mainviewyh
 										.getUserNameA(), mainviewyh
 										.getUserNameA());
 						Message msgB = new Message(
-								Setting.REQUSET_ACCESS_DATABASE, o.toString(),
+								Setting.REQUEST_ACCESS_DATABASE, o.toString(),
 								mainviewyh.getUserNameA(), mainviewyh
 										.getUserNameA());
 						sendMessage(msgA);
@@ -58,6 +66,54 @@ public class MainViewControl {
 				sendMessage(msgout);
 			}
 		});
+		mainviewyh.addChooseAvatar(new MouseListener() {
+			
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// TODO Auto-generated method stub
+				if (e.getClickCount() == 2) {
+					File file = mainviewyh.showAvatarChooser();
+					BufferedImage bimg;
+					try {
+						bimg = ImageIO.read(file);
+						mainviewyh.setAvatar(bimg);
+
+						Message message = new Message(Setting.REQUEST_UPLOAD_IMAGE,
+								ImageManager.encodeToString(bimg, "jpg"),
+								mainviewyh.getUserNameA(), 
+								mainviewyh.getUserNameA());
+						sendMessage(message);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 	}
 
 	public void sendMessage(Message msg) {
@@ -69,7 +125,7 @@ public class MainViewControl {
 		}
 	}
 
-	public Message recieveMsg() {
+	public Message receive() {
 		Message msg = null;
 		try {
 			msg = (Message) ois.readObject();
@@ -82,5 +138,4 @@ public class MainViewControl {
 		}
 		return msg;
 	}
-
 }

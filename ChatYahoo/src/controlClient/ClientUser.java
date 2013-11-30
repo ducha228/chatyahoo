@@ -99,22 +99,23 @@ public class ClientUser extends Thread {
 		return false;
 	}
 
-	public Image receiveImage() {
+	public void receiveImage(String fileName) {
 		try {
-			BufferedImage img = ImageIO.read(ImageIO.createImageInputStream(ois));
-			Image image = img;
-			return image;
+			BufferedImage img = ImageIO.read(ImageIO
+					.createImageInputStream(ois));
+			
+			File file = new File(fileName + ".jpg");
+			ImageIO.write(img, "jpg", file);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return null;
 	}
-	
-	public void sendImage(Image image) {
+
+	public void sendImage(String fileName) {
 		try {
-			BufferedImage bimg = ImageIO.read(new File("D:\\adi-siddhi\\DSC02503.JPG"));
-			ImageIO.write(bimg,"JPG",oos);
+			BufferedImage bimg = ImageIO.read(new File(fileName + ".jpg"));
+			ImageIO.write(bimg, "JPG", oos);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -141,8 +142,9 @@ public class ClientUser extends Thread {
 
 					Object obj = msg.getObj();
 					User user = (User) obj;
-					Image avatar = receiveImage();
-					mainviewYh = new MainViewYahoo(user,avatar);
+					
+					mainviewYh = new MainViewYahoo(user);
+					
 					mainviewYh.setVisible(true);
 					MainViewControl mvcontrol = new MainViewControl(mainviewYh,
 							ois, oos);
@@ -151,6 +153,11 @@ public class ClientUser extends Thread {
 					view.showMessage("tai khoan khong hop le");
 				}
 				break;
+			case Setting.RESPONSE_AVATAR:
+				Message avatarMessage = recieveMsg();
+				String imageStr = (String) avatarMessage.getObj();
+				BufferedImage avatar = ImageManager.decodeToImage(imageStr);
+				mainviewYh.setAvatar(avatar);
 			case Setting.RESPNONSE_ALL_ONLINE:
 				Vector<String> vec = (Vector<String>) msg.getObj();
 				mainviewYh.UpdatelistOnline(vec);
