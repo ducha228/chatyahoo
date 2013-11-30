@@ -1,10 +1,14 @@
 package controlClient;
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Vector;
 
+import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
 import sun.nio.cs.HistoricallyNamedCharset;
@@ -95,6 +99,27 @@ public class ClientUser extends Thread {
 		return false;
 	}
 
+	public Image receiveImage() {
+		try {
+			BufferedImage img = ImageIO.read(ImageIO.createImageInputStream(ois));
+			Image image = img;
+			return image;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public void sendImage(Image image) {
+		try {
+			BufferedImage bimg = ImageIO.read(new File("D:\\adi-siddhi\\DSC02503.JPG"));
+			ImageIO.write(bimg,"JPG",oos);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	public void run() {
 		while (true) {
 			Message msg = recieveMsg();
@@ -116,7 +141,8 @@ public class ClientUser extends Thread {
 
 					Object obj = msg.getObj();
 					User user = (User) obj;
-					mainviewYh = new MainViewYahoo(user);
+					Image avatar = receiveImage();
+					mainviewYh = new MainViewYahoo(user,avatar);
 					mainviewYh.setVisible(true);
 					MainViewControl mvcontrol = new MainViewControl(mainviewYh,
 							ois, oos);

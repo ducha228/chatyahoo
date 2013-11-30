@@ -2,6 +2,7 @@ package view;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -32,11 +33,12 @@ public class MainViewYahoo extends JFrame {
 	private JLabel lblBanner;
 	private DefaultListModel dlm;
 	private User user;
-
-	public MainViewYahoo(User user) {
+	private Image avatar;
+	public MainViewYahoo(User user,Image avatar) {
 		// TODO Auto-generated constructor stub
 		super("ChatOnline");
 		this.user = user;
+		this.avatar = avatar;
 		MyPanel pnlChat = new MyPanel("backgroundview.jpg");
 		pnlChat.setPreferredSize(new Dimension(250, 500));
 
@@ -44,7 +46,7 @@ public class MainViewYahoo extends JFrame {
 
 		lblAvatar = new JLabel();
 		lblAvatar.setBounds(25, 10, 50, 50);
-		lblAvatar.setIcon(new ImageIcon("avatar.jpg"));
+		lblAvatar.setIcon(new ImageIcon(avatar));
 		pnlChat.add(lblAvatar);
 
 		lblUserName = new JLabel(user.getUserName());
@@ -120,12 +122,5 @@ public class MainViewYahoo extends JFrame {
 		for (String string : vec) {
 			dlm.addElement(string);
 		}
-	}
-
-	public static void main(String[] args) {
-		User user = new User();
-		user.setUserName("To Nu");
-		MainViewYahoo mainview = new MainViewYahoo(user);
-		mainview.setVisible(true);
 	}
 }

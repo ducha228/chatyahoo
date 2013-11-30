@@ -11,6 +11,7 @@ import java.sql.Connection;
 
 import javax.swing.JOptionPane;
 
+import controlServer.ServerTCPControl;
 import model.Message;
 import model.Setting;
 import model.User;
@@ -31,7 +32,7 @@ public class RegisterController {
 			// TODO Auto-generated method stub
 			User user = rv.getUser();
 			try {
-				Socket mySocket = new Socket(Setting.SERVER_HOST,Setting.SERVER_PORT);
+				Socket mySocket = new Socket(ServerTCPControl.gethost(),ServerTCPControl.serverPort);
 				ObjectOutputStream oos = new ObjectOutputStream(mySocket.getOutputStream());
 				Message message = new Message(Setting.REQUEST_REGISTER, user, null, null);
 				oos.writeObject(message);

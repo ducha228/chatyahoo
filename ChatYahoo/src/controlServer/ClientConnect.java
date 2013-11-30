@@ -1,5 +1,8 @@
 package controlServer;
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -8,6 +11,8 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Vector;
+
+import javax.imageio.ImageIO;
 
 import model.ChatHistory;
 import model.Message;
@@ -74,6 +79,33 @@ public class ClientConnect extends Thread {
 		}
 	}
 
+	public Image receiveImage() {
+		try {
+			BufferedImage img = ImageIO.read(ImageIO
+					.createImageInputStream(ois));
+			Image image = img;
+			File file = new File(fileName + "." + ext);
+			BufferedImage image = toBufferedImage(file);
+			ImageIO.write(image, ext, file);
+			return image;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public void sendImage(Image image) {
+		try {
+			BufferedImage bimg = ImageIO.read(new File(
+					"D:\\adi-siddhi\\DSC02503.JPG"));
+			ImageIO.write(bimg, "JPG", oos);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 	public void run() {
 		while (true) {
 			try {
@@ -105,7 +137,8 @@ public class ClientConnect extends Thread {
 								.getObj()));
 						System.out.println(userA.getUserName());
 						Message msgFlag = new Message(
-								Setting.RESPONSE_ACCESS_DATABASE, null, null, null);
+								Setting.RESPONSE_ACCESS_DATABASE, null, null,
+								null);
 						sendMessage(msgFlag);
 						Message msgArespone = new Message(
 								Setting.RESPONSE_ACCESS_DATABASE, userA, null,
@@ -149,8 +182,9 @@ public class ClientConnect extends Thread {
 						ChatHistory history = rmiServer.searchHistory(msg);
 						User userA = history.getUserA();
 						User userB = history.getUserB();
-						Message msgSendUserB = new Message(Setting.RESPONSE_CHAT,
-								history, userA.getUserName(), userB.getUserName());
+						Message msgSendUserB = new Message(
+								Setting.RESPONSE_CHAT, history,
+								userA.getUserName(), userB.getUserName());
 						serverTCP.sendtoUser(msg.getRecipient(), msgSendUserB);
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
