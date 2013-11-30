@@ -199,17 +199,30 @@ public class ClientConnect extends Thread {
 					user = (User) msg.getObj();
 					Message avatarMessage = new Message();
 					avatarMessage.setType(Setting.RESPONSE_AVATAR);
-					BufferedImage bimg = ImageIO.read(new File(user.getUserName() + ".jpg"));
-					avatarMessage.setObj(ImageManager.encodeToString(bimg, "jpg"));
+					File file = new File(user.getUserName() + ".jpg");
+					BufferedImage bimg = null; 
+					if (file.exists()) {
+						bimg = ImageIO.read(new File(user.getUserName() + ".jpg"));
+						avatarMessage.setObj(ImageManager.encodeToString(bimg, "jpg"));
+					} else {
+						avatarMessage.setObj("NO_IMG");
+					}
 					avatarMessage.setSender(msg.getSender());
 					avatarMessage.setRecipient(msg.getRecipient());
 					sendMessage(avatarMessage);
+					break;
+				case Setting.REQUEST_UPLOAD_IMAGE:
+					String imagestr = (String) msg.getObj();
+					BufferedImage bufferedImage = ImageManager.decodeToImage(imagestr);
+					File file2 = new File(msg.getSender() + ".jpg");
+					ImageIO.write(bufferedImage, "jpg", file2);
+					break;
 				default:
 					break;
 				}
 			} catch (Exception e) {
 				// TODO: handle exception
-				System.out.println("out");
+				System.out.println(e.toString());
 				break;
 			}
 		}

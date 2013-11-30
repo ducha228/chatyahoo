@@ -48,12 +48,12 @@ public class MainViewControl {
 						Object o = theList.getModel().getElementAt(index);
 						System.out.println("Double-clicked on: " + o.toString());
 						Message msgA = new Message(
-								Setting.REQUSET_ACCESS_DATABASE, mainviewyh
+								Setting.REQUEST_ACCESS_DATABASE, mainviewyh
 										.getUserNameA(), mainviewyh
 										.getUserNameA(), mainviewyh
 										.getUserNameA());
 						Message msgB = new Message(
-								Setting.REQUSET_ACCESS_DATABASE, o.toString(),
+								Setting.REQUEST_ACCESS_DATABASE, o.toString(),
 								mainviewyh.getUserNameA(), mainviewyh
 										.getUserNameA());
 						sendMessage(msgA);
@@ -97,7 +97,7 @@ public class MainViewControl {
 					try {
 						bimg = ImageIO.read(file);
 						mainviewyh.setAvatar(bimg);
-
+						
 						Message message = new Message(Setting.REQUEST_UPLOAD_IMAGE,
 								ImageManager.encodeToString(bimg, "jpg"),
 								mainviewyh.getUserNameA(), 

@@ -63,7 +63,7 @@ public class ClientUser extends Thread {
 	}
 	public MainChat searchMainChat(ChatHistory hitorytmp, Vector<MainChat> vec) {
 		for (MainChat view : vec) {
-			if(testMainChatandHistory(hitorytmp, view));
+			if(testMainChatandHistory(hitorytmp, view))
 			return view;
 		}
 		return null;
@@ -112,28 +112,28 @@ public class ClientUser extends Thread {
 		return false;
 	}
 
-	public void receiveImage(String fileName) {
-		try {
-			BufferedImage img = ImageIO.read(ImageIO
-					.createImageInputStream(ois));
-			
-			File file = new File(fileName + ".jpg");
-			ImageIO.write(img, "jpg", file);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	public void sendImage(String fileName) {
-		try {
-			BufferedImage bimg = ImageIO.read(new File(fileName + ".jpg"));
-			ImageIO.write(bimg, "JPG", oos);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+//	public void receiveImage(String fileName) {
+//		try {
+//			BufferedImage img = ImageIO.read(ImageIO
+//					.createImageInputStream(ois));
+//			
+//			File file = new File(fileName + ".jpg");
+//			ImageIO.write(img, "jpg", file);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
+//
+//	public void sendImage(String fileName) {
+//		try {
+//			BufferedImage bimg = ImageIO.read(new File(fileName + ".jpg"));
+//			ImageIO.write(bimg, "JPG", oos);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
 	public void run() {
 		while (true) {
 			Message msg = recieveMsg();
@@ -162,15 +162,24 @@ public class ClientUser extends Thread {
 					MainViewControl mvcontrol = new MainViewControl(mainviewYh,
 							ois, oos);
 					view.setVisible(false);
+					Message message = new Message(Setting.REQUEST_AVATAR, user, user.getUserName(), null);
+					System.out.println("Request avatar successfully");
+					sendMessage(message);
 				} else {
 					view.showMessage("tai khoan khong hop le");
 				}
 				break;
 			case Setting.RESPONSE_AVATAR:
-				Message avatarMessage = recieveMsg();
-				String imageStr = (String) avatarMessage.getObj();
-				BufferedImage avatar = ImageManager.decodeToImage(imageStr);
-				mainviewYh.setAvatar(avatar);
+				System.out.println("Response avatar successfully");
+				String imageStr = (String) msg.getObj();
+				System.out.println(imageStr);
+				if (!imageStr.equals("NO_IMG")) {
+					BufferedImage avatar = ImageManager.decodeToImage(imageStr);
+					mainviewYh.setAvatar(avatar);
+				} else {
+					mainviewYh.setDefaultAvatar();
+				}
+				break;
 			case Setting.RESPNONSE_ALL_ONLINE:
 				Vector<String> vec = (Vector<String>) msg.getObj();
 				mainviewYh.UpdatelistOnline(vec);
