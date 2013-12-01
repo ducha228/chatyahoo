@@ -260,6 +260,24 @@ public class ClientConnect extends Thread {
 								Setting.RESPNONSE_ALL_ONLINE, vec, null, null));
 					}
 					break;
+				case Setting.REQUEST_ONLINE:
+					User user1 = (User) msg.getObj();
+					user1 = rmiServer.searchUser(user1.getUserName());
+					rmiServer.updateOnl(user1, 1);
+					for (String string : serverTCP.getVecOnline()) {
+						Vector<String> vec = new Vector<>();
+						for (String string2 : rmiServer.vecFriend(rmiServer
+								.searchUser(string))) {
+							if (rmiServer.searchUser(string2).getIsOnline() == 0) {
+								vec.add(string2 + "       -        offline");
+							} else {
+								vec.add(string2 + "       -        online");
+							}
+						}
+						serverTCP.sendtoUser(string, new Message(
+								Setting.RESPNONSE_ALL_ONLINE, vec, null, null));
+					}
+					break;
 				default:
 					break;
 				}

@@ -24,6 +24,7 @@ public class MainViewControl {
 	private MainViewYahoo mainviewyh;
 	private ObjectInputStream ois;
 	private ObjectOutputStream oos;
+	String tmp;
 
 	public MainViewControl(final MainViewYahoo mainviewyh,
 			final ObjectInputStream ois, final ObjectOutputStream oos) {
@@ -31,6 +32,7 @@ public class MainViewControl {
 		this.mainviewyh = mainviewyh;
 		this.ois = ois;
 		this.oos = oos;
+		tmp = "";
 		mainviewyh.addActionListFriend(new MouseAdapter() {
 			public void mouseClicked(MouseEvent mouseEvent) {
 				JList theList = (JList) mouseEvent.getSource();
@@ -44,7 +46,8 @@ public class MainViewControl {
 										.getUserNameA(), mainviewyh
 										.getUserNameA(), mainviewyh
 										.getUserNameA());
-						StringTokenizer strt = new StringTokenizer(o.toString(), " ");
+						StringTokenizer strt = new StringTokenizer(
+								o.toString(), " ");
 						String userName = "";
 						while (strt.hasMoreElements()) {
 							userName = strt.nextToken();
@@ -61,13 +64,35 @@ public class MainViewControl {
 			}
 		});
 		mainviewyh.addFriendAction(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				AddFriend viewaddfriend = new AddFriend(mainviewyh.getUser());
-				AddFriendColtrol controlAddfriend = new AddFriendColtrol(viewaddfriend, ois, oos);
+				AddFriendColtrol controlAddfriend = new AddFriendColtrol(
+						viewaddfriend, ois, oos);
 				viewaddfriend.setVisible(true);
+			}
+		});
+		mainviewyh.ChangeItemStatement(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if (mainviewyh.getInforAcombobox().equals("Offline")) {
+					User userOut = mainviewyh.getUser();
+					Message msgout = new Message(Setting.REQUEST_SIGNOUT,
+							userOut, userOut.getUserName(), null);
+					sendMessage(msgout);
+					tmp = mainviewyh.getInforAcombobox();
+				}
+				else if (mainviewyh.getInforAcombobox().equals("Online") && tmp.equals("Offline")){
+					User userOnl= mainviewyh.getUser();
+					Message msgonl = new Message(Setting.REQUEST_ONLINE,
+							userOnl, userOnl.getUserName(), null);
+					sendMessage(msgonl);
+					tmp = "";
+				}
 			}
 		});
 		mainviewyh.addWindowListener(new WindowAdapter() {
