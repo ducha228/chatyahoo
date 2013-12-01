@@ -13,9 +13,11 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.util.StringTokenizer;
 import java.awt.event.MouseListener;
 
 import javax.imageio.ImageIO;
+
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
@@ -52,8 +54,14 @@ public class MainViewControl {
 										.getUserNameA(), mainviewyh
 										.getUserNameA(), mainviewyh
 										.getUserNameA());
+						StringTokenizer strt = new StringTokenizer(o.toString(), " ");
+						String userName = "";
+						while (strt.hasMoreElements()) {
+							userName = strt.nextToken();
+							break;
+						}
 						Message msgB = new Message(
-								Setting.REQUEST_ACCESS_DATABASE, o.toString(),
+								Setting.REQUEST_ACCESS_DATABASE, userName,
 								mainviewyh.getUserNameA(), mainviewyh
 										.getUserNameA());
 						sendMessage(msgA);
@@ -79,6 +87,13 @@ public class MainViewControl {
 				Message msgout = new Message(Setting.REQUEST_SIGNOUT, userOut,
 						userOut.getUserName(), null);
 				sendMessage(msgout);
+				try {
+					ois.close();
+					oos.close();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 
 			}
 		});

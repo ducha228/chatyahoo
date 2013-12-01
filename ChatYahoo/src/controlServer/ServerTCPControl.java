@@ -94,6 +94,7 @@ public class ServerTCPControl {
 			hash.get(s).sendMessage(msg);
 		}
 	}
+
 	public void sendAllUserOffline(User useroff) {
 		Enumeration en = hash.keys();
 		while (en.hasMoreElements()) {

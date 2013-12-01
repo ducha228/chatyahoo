@@ -83,29 +83,6 @@ public class ClientConnect extends Thread {
 		}
 	}
 
-//	public void receiveImage(String fileName) {
-//		try {
-//			BufferedImage img = ImageIO.read(ImageIO
-//					.createImageInputStream(ois));
-//			
-//			File file = new File(fileName + ".jpg");
-//			ImageIO.write(img, "jpg", file);
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
-//
-//	public void sendImage(String fileName) {
-//		try {
-//			BufferedImage bimg = ImageIO.read(new File(fileName + ".jpg"));
-//			ImageIO.write(bimg, "JPG", oos);
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
-
 	public void run() {
 		while (true) {
 			try {
@@ -114,17 +91,29 @@ public class ClientConnect extends Thread {
 				switch (flag) {
 				case Setting.REQUEST_LOGIN:
 					User user = (User) msg.getObj();
+					user = rmiServer.searchUser(user.getUserName());
 					try {
 						String result = rmiServer.checkLogin(user);
 						if (result.equals("YES")) {
+							rmiServer.updateOnl(user, 1);
 							serverTCP.hash.put(user.getUserName(), this);
 							System.out.println(serverTCP.getVecOnline().size());
 						}
 						msg.setType(Setting.RESPONSE_LOGIN);
 						sendMessage(msg);
 						sendString(result);
-						serverTCP.sendAllOnline();
-						
+						for (String string: serverTCP.getVecOnline()) {
+							Vector<String> vec = new Vector<>();
+							for (String string2 : rmiServer.vecFriend(rmiServer.searchUser(string))) {
+								if (rmiServer.searchUser(string2).getIsOnline() == 0) {
+									vec.add(string2 + "       -        offline"); 
+								} else {
+									vec.add(string2 + "       -        online");
+								}
+							}
+							serverTCP.sendtoUser(string, new Message(Setting.RESPNONSE_ALL_ONLINE, vec, null, null));
+						}
+
 					} catch (RemoteException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -194,9 +183,37 @@ public class ClientConnect extends Thread {
 					break;
 				case Setting.REQUEST_SIGNOUT:
 					User userout = (User) msg.getObj();
-					serverTCP.removeUserOut(userout);
-					serverTCP.sendAllOnline();
-					serverTCP.sendAllUserOffline(userout);
+					userout = rmiServer.searchUser(userout.getUserName());
+					rmiServer.updateOnl(userout, 0);
+					for (String string: serverTCP.getVecOnline()) {
+						Vector<String> vec = new Vector<>();
+						for (String string2 : rmiServer.vecFriend(rmiServer.searchUser(string))) {
+							if (rmiServer.searchUser(string2).getIsOnline() == 0) {
+								vec.add(string2 + "       -        offline"); 
+							} else {
+								vec.add(string2 + "       -        online");
+							}
+						}
+						serverTCP.sendtoUser(string, new Message(Setting.RESPNONSE_ALL_ONLINE, vec, null, null));
+					}
+					break;
+				case Setting.REQUEST_ADDFRIEND:
+					String userNameUserSend = (String) msg.getSender();
+					String userNameFriendAdd = (String) msg.getObj();
+					
+					if (rmiServer.searchUser(userNameFriendAdd) == null) {
+						String result = "NO";
+						serverTCP.sendtoUser(msg.getSender(), new Message(
+								Setting.RESPONSE_ADDFRIEND, result, null,
+								userNameUserSend));
+					} else {
+						serverTCP.sendtoUser(userNameFriendAdd, new Message(
+								Setting.REQUEST_ACCEPTADDFRIEND, msg,
+								userNameUserSend, userNameFriendAdd));
+					}
+					break;
+				case Setting.RESPONSE_DECLINEADDFRIEND:
+					serverTCP.sendtoUser(msg.getRecipient(), msg);
 					break;
 				case Setting.REQUEST_AVATAR:
 					user = (User) msg.getObj();
