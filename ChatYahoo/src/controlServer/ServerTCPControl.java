@@ -86,6 +86,14 @@ public class ServerTCPControl {
 		}
 	}
 	
+	public void sendAllOnlineFriend(Vector<String> vec) {
+		Enumeration en = hash.keys();
+		while (en.hasMoreElements()) {
+			String s = (String) en.nextElement();
+			Message msg = new Message(Setting.RESPNONSE_ALL_ONLINE, vec, "", s);
+			hash.get(s).sendMessage(msg);
+		}
+	}
 	public void sendAllUserOffline(User useroff) {
 		Enumeration en = hash.keys();
 		while (en.hasMoreElements()) {

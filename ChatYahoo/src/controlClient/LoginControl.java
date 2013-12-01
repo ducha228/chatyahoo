@@ -49,7 +49,7 @@ public class LoginControl {
 							.getInputStream());
 					oos.writeObject(msg);
 					ClientUser cu = new ClientUser(ois, oos, msg, logInView);
-				} catch (Exception e) {
+				} catch (Exception e) { 
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}

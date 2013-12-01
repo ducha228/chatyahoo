@@ -28,6 +28,7 @@ public class AddFriendColtrol {
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
 				sendMessage(new Message(Setting.REQUEST_ADDFRIEND, view.getUserNameFriend(), view.getUser().getUserName(), view.getUser().getUserName()));
+				view.setVisible(false);
 			}
 		});
 	}
