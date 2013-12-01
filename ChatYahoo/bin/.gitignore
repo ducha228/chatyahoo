@@ -1,4 +1,3 @@
-/.gitignore
 /controlClient
 /controlRMI
 /controlServer

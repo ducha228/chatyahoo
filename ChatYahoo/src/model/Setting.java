@@ -17,7 +17,7 @@ public class Setting implements Serializable {
 	public static final int RESPONSE_USER_ONLINE = 6;
 	public static final int RESPNONSE_ALL_ONLINE = 7;
 	public static final int REQUEST_ALL_ONLINE = 8;
-	public static final int REQUEST_ACCESS_DATABASE = 9;
+	public static final int REQUSET_ACCESS_DATABASE = 9;
 	public static final int RESPONSE_ACCESS_DATABASE = 10;
 	public static final int REQUEST_REGISTER = 11;
 	public static final int RESPONSE_REGISTER = 12;

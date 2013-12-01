@@ -6,6 +6,6 @@
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="E:/chatyahoogithub/ChatYahoo/mysql-connector-java-5.1.18-bin.jar"/>
+	<classpathentry kind="lib" path="E:/Hoc tap/ChatYahoo/mysql-connector-java-5.1.18-bin.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
