@@ -33,4 +33,5 @@ public class Setting implements Serializable {
 	public static final int RESPONSE_DECLINEADDFRIEND = 23;
 	public static final int REQUEST_ACCEPTADDFRIEND = 24;
 	public static final int REQUEST_ONLINE = 25;
+	public static final int RESPONSE_OFFLINEMESSAGE = 26;
 }

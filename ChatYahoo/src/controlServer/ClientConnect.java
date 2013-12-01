@@ -30,6 +30,7 @@ public class ClientConnect extends Thread {
 	private String rmiService = "rmitcpLoginServer";
 	private int serverRMIPort = 3535;
 	private Vector<String> vecChatting;
+	Vector<Vector<Message>> vecOffline;
 	private String serverRMIHost = "localhost";
 
 	public ClientConnect(ObjectInputStream ois, ObjectOutputStream oos,
@@ -38,6 +39,7 @@ public class ClientConnect extends Thread {
 		this.ois = ois;
 		this.oos = oos;
 		this.serverTCP = serverTCP;
+		vecOffline = new Vector<>();
 		vecChatting = new Vector<>();
 		bindingRMI();
 		this.start();
@@ -105,6 +107,42 @@ public class ClientConnect extends Thread {
 			e.printStackTrace();
 		}
 	}
+	
+	public boolean testMessageinVecMsg(Message msg, Vector<Message> vec) {
+		Message tmp = vec.get(0);
+		if(tmp.getRecipient().equals(msg.getRecipient())){
+			return true;
+		}
+		return false;
+	}
+	
+	public void addOff(Message msg, Vector<Vector<Message>> vec) {
+		int ok = 1;
+		for (int i = 0; i < vec.size(); i++) {
+			if(testMessageinVecMsg(msg, vec.get(i))){
+				ok = 0;
+				vec.get(i).add(msg);
+				break;
+			}
+		}
+		if(ok == 1){
+			Vector<Message> vecmsg = new Vector<>();
+			vecmsg.add(msg);
+			vec.add(vecmsg);
+		}
+	}
+	
+	public Vector<Message> searchVecHistoryOff(Message msg, Vector<Vector<Message>> vec) {
+		Vector<Message> result = new Vector<>();
+		for (Vector<Message> vecmessage : vec) {
+			Message tmp = vecmessage.get(0);
+			if(msg.getRecipient().equals(tmp.getRecipient())){
+				result = vecmessage;
+				break;
+			}
+		}
+		return result;
+	}
 
 	public void run() {
 		while (true) {
@@ -125,6 +163,7 @@ public class ClientConnect extends Thread {
 						msg.setType(Setting.RESPONSE_LOGIN);
 						sendMessage(msg);
 						sendString(result);
+						serverTCP.sendtoUser(user.getUserName(), new Message(Setting.RESPONSE_OFFLINEMESSAGE, searchVecHistoryOff(msg, vecOffline), null, null));
 						for (String string : serverTCP.getVecOnline()) {
 							Vector<String> vec = new Vector<>();
 							for (String string2 : rmiServer.vecFriend(rmiServer
@@ -138,6 +177,7 @@ public class ClientConnect extends Thread {
 							serverTCP.sendtoUser(string, new Message(
 									Setting.RESPNONSE_ALL_ONLINE, vec, null,
 									null));
+							
 						}
 					} catch (RemoteException e) {
 						// TODO Auto-generated catch block
@@ -200,7 +240,12 @@ public class ClientConnect extends Thread {
 						Message msgSendUserB = new Message(
 								Setting.RESPONSE_CHAT, history,
 								userA.getUserName(), userB.getUserName());
-						serverTCP.sendtoUser(msg.getRecipient(), msgSendUserB);
+						User userRecieve = rmiServer.searchUser(msg.getRecipient());
+						if (userRecieve.getIsOnline() == 1) {
+							serverTCP.sendtoUser(msg.getRecipient(), msgSendUserB);
+						} else {
+							addOff(msg, vecOffline);
+						}
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

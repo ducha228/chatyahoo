@@ -247,6 +247,10 @@ public class ClientUser extends Thread {
 			case Setting.RESPONSE_ACCEPTADDFRIEND:
 				JOptionPane.showMessageDialog(null, msg.getSender() + " đồng ý lời mời kết bạn");
 				break;
+			case Setting.RESPONSE_OFFLINEMESSAGE:
+				Vector<Message> vecmsg = (Vector<Message>) msg.getObj();
+				System.out.println(vecmsg.size());
+				break;
 			default:
 				break;
 			}
