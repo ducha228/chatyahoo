@@ -13,6 +13,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.net.Socket;
 import java.util.StringTokenizer;
 import java.awt.event.MouseListener;
 
@@ -32,12 +33,14 @@ import view.MainViewYahoo;
 public class MainViewControl {
 
 	private MainViewYahoo mainviewyh;
+	private Socket mySocket;
 	private ObjectInputStream ois;
 	private ObjectOutputStream oos;
 
-	public MainViewControl(final MainViewYahoo mainviewyh,
+	public MainViewControl(final Socket mySocket, final MainViewYahoo mainviewyh,
 			final ObjectInputStream ois, final ObjectOutputStream oos) {
 		super();
+		this.mySocket = mySocket;
 		this.mainviewyh = mainviewyh;
 		this.ois = ois;
 		this.oos = oos;
@@ -90,6 +93,7 @@ public class MainViewControl {
 				try {
 					ois.close();
 					oos.close();
+					mySocket.close();
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();

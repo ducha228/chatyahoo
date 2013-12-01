@@ -11,8 +11,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.Vector;
 
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
@@ -26,6 +28,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import controlClient.ImageManager;
 import model.User;
@@ -43,8 +47,23 @@ public class MainViewYahoo extends JFrame {
 	public MainViewYahoo(User user) {
 		// TODO Auto-generated constructor stub
 		super("ChatOnline");
+		try {
+			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+		} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (InstantiationException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IllegalAccessException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (UnsupportedLookAndFeelException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		this.user = user;
-		MyPanel pnlChat = new MyPanel("backgroundview.jpg");
+		MyPanel pnlChat = new MyPanel("backgroundview2.jpg");
 		pnlChat.setPreferredSize(new Dimension(250, 500));
 
 		// ---------------------------avata+UserName--------------------------
@@ -81,11 +100,18 @@ public class MainViewYahoo extends JFrame {
 
 		txtSearch = new PlaceholderTextField();
 		txtSearch.setPlaceholder("Type your key here");
-		txtSearch.setBounds(new Rectangle(0, 100, 150, 30));
+		txtSearch.setBounds(new Rectangle(0, 100, 200, 30));
 		pnlChat.add(txtSearch);
-
-		btnAddfriend = new JButton("Add");
-		btnAddfriend.setBounds(new Rectangle(150, 100, 100, 30));
+		BufferedImage image = null;
+		try {
+			image = ImageIO.read(new File("addfriend.png"));
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		image = ImageManager.getScaledImage(image, 30, 30);
+		btnAddfriend = new JButton(new ImageIcon(image));
+		btnAddfriend.setBounds(new Rectangle(200, 100, 30, 30));
 		pnlChat.add(btnAddfriend);
 
 		dlm = new DefaultListModel<>();

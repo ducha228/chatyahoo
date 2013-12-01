@@ -2,11 +2,16 @@ package view;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.Vector;
 
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -18,6 +23,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.border.LineBorder;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.Style;
@@ -47,21 +56,38 @@ public class MainChat extends JFrame {
 
 	public MainChat(User userA, User userB) {
 		// TODO Auto-generated constructor stub
+		
 		super(userA.getUserName());
+		try {
+			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+		} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (InstantiationException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IllegalAccessException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (UnsupportedLookAndFeelException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		this.userA = userA;
 		this.userB = userB;
-		JPanel pnlMain = new JPanel(null);
-		pnlMain.setPreferredSize(new Dimension(600, 550));
+		MyPanel pnlMain = new MyPanel("backgroundchat2.jpg");
+		pnlMain.setLayout(null);
+		pnlMain.setPreferredSize(new Dimension(550, 450));
 		// ----------------------set UserNameA----------------------
 
-		lblnickNameA = new JLabel(userB.getUserName());
-		lblnickNameA.setBounds(10, 80, 100, 30);
+		lblnickNameA = new JLabel(userB.getUserName().toUpperCase());
+		lblnickNameA.setBounds(10, 30, 100, 30);
 		pnlMain.add(lblnickNameA);
 
 		// ----------------------set txaChat------------------------
 
 		txpChat = new JTextPane();
-		txpChat.setBounds(new Rectangle(5, 120, 450, 250));
+		txpChat.setBounds(new Rectangle(5, 70, 450, 250));
 		txpChat.setEditable(false);
 		// txpChat.setLineWrap(true);
 		// txpChat.setWrapStyleWord(true);
@@ -76,7 +102,7 @@ public class MainChat extends JFrame {
 		// ----------------------set txtMainChat--------------------
 
 		txtInputChat = new JTextArea();
-		txtInputChat.setBounds(new Rectangle(5, 430, 450, 100));
+		txtInputChat.setBounds(new Rectangle(5, 340, 450, 100));
 		txtInputChat.setLineWrap(true);
 		txtInputChat.setWrapStyleWord(true);
 		txtInputChat.setBorder(BorderFactory.createLineBorder(Color.black));
@@ -85,20 +111,33 @@ public class MainChat extends JFrame {
 		// ---------------------------setUserAvata------------------------
 
 		lblavataA = new JLabel(new ImageIcon("UserDefault.jpg"));
-		lblavataA.setBounds(new Rectangle(470, 120, 115, 115));
+		lblavataA.setBounds(new Rectangle(470, 80, 50, 50));
 		pnlMain.add(lblavataA);
 
 		lblavataB = new JLabel(new ImageIcon("UserDefault.jpg"));
-		lblavataB.setBounds(new Rectangle(470, 255, 115, 115));
+		lblavataB.setBounds(new Rectangle(470, 200, 50, 50));
 		pnlMain.add(lblavataB);
 
 		// -------------------------Button Send------------------------
 
-		btnSend = new JButton("Send");
-		btnSend.setBounds(new Rectangle(470, 450, 100, 70));
+		BufferedImage image = null;
+		try {
+			image = ImageIO.read(new File("send2.png"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		image = ImageManager.getScaledImage(image, 64, 64);
+		btnSend = new JButton(new ImageIcon(image));
+		btnSend.setHorizontalAlignment(SwingConstants.CENTER);
+		btnSend.setBounds(new Rectangle(470, 340, 50, 50));
+		btnSend.setBackground(new Color(1f,1f,1f,0f));
+		btnSend.setBorder(new LineBorder(new Color(1f,1f,1f,0f), 0));
 		pnlMain.add(btnSend);
 
+		
 		this.setContentPane(pnlMain);
+		this.setBounds(300, 150, 600, 550);
 		this.pack();
 	}
 
@@ -106,7 +145,9 @@ public class MainChat extends JFrame {
 	public void addKeyInputEvent(KeyAdapter act) {
 		txtInputChat.addKeyListener(act);
 	}
-
+	public void addSendListener(ActionListener al) {
+		btnSend.addActionListener(al);
+	}
 	public void updateEnter() {
 		String message = txtInputChat.getText();
 		StyledDocument doc = processString(userA, message);

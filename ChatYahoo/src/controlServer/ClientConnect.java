@@ -185,6 +185,7 @@ public class ClientConnect extends Thread {
 					User userout = (User) msg.getObj();
 					userout = rmiServer.searchUser(userout.getUserName());
 					rmiServer.updateOnl(userout, 0);
+					serverTCP.removeUserOut(userout);
 					for (String string: serverTCP.getVecOnline()) {
 						Vector<String> vec = new Vector<>();
 						for (String string2 : rmiServer.vecFriend(rmiServer.searchUser(string))) {
@@ -215,6 +216,24 @@ public class ClientConnect extends Thread {
 				case Setting.RESPONSE_DECLINEADDFRIEND:
 					serverTCP.sendtoUser(msg.getRecipient(), msg);
 					break;
+				case Setting.RESPONSE_ACCEPTADDFRIEND:
+					rmiServer.insertFriendList(msg);
+					serverTCP.sendtoUser(msg.getRecipient(), msg);
+					for (String string : serverTCP.getVecOnline()) {
+						Vector<String> vec = new Vector<>();
+						for (String string2 : rmiServer.vecFriend(rmiServer
+								.searchUser(string))) {
+							if (rmiServer.searchUser(string2).getIsOnline() == 0) {
+								vec.add(string2 + "       -        offline");
+							} else {
+								vec.add(string2 + "       -        online");
+							}
+						}
+						serverTCP.sendtoUser(string, new Message(
+								Setting.RESPNONSE_ALL_ONLINE, vec, null, null));
+					}
+					break;
+
 				case Setting.REQUEST_AVATAR:
 					user = (User) msg.getObj();
 					Dictionary<String, String> dic = new Hashtable<String,String>();

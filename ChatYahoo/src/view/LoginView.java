@@ -12,6 +12,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import model.User;
 
@@ -21,8 +23,8 @@ public class LoginView extends JFrame {
 	 * 
 	 */
 	private static final long serialVersionUID = 1454502557425549466L;
-	private JTextField txtUserName;
-	private JPasswordField txtpassword;
+	private PlaceholderTextField txtUserName;
+	private HintedPasswordField txtpassword;
 	private JLabel lblUserName, lblPassword, lblIcon;
 	private JButton btnLogin, btnRegister;
 	private JCheckBox chbRememberpass, chbHidden;
@@ -30,12 +32,27 @@ public class LoginView extends JFrame {
 	public LoginView() {
 		// TODO Auto-generated constructor stub
 		super("Chat server");
-		MyPanel pnlLogin = new MyPanel("background.jpg");
+		try {
+			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+		} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (InstantiationException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IllegalAccessException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (UnsupportedLookAndFeelException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		MyPanel pnlLogin = new MyPanel("backgroundlogin.jpg");
 		pnlLogin.setPreferredSize(new Dimension(250, 450));
 
 		// -----------------Icon--------------------------
 
-		lblIcon = new JLabel(new ImageIcon("iconChat.jpg"));
+		lblIcon = new JLabel(new ImageIcon("chatlogin.png"));
 		lblIcon.setBounds(new Rectangle(90, 15, 70, 70));
 		pnlLogin.add(lblIcon);
 
@@ -43,32 +60,33 @@ public class LoginView extends JFrame {
 
 		lblUserName = new JLabel("UserName: ");
 		lblUserName.setBounds(0, 150, 70, 30);
-		pnlLogin.add(lblUserName);
+		//pnlLogin.add(lblUserName);
 
-		txtUserName = new JTextField(25);
-		txtUserName.setBounds(100, 150, 100, 30);
+		txtUserName = new PlaceholderTextField();
+		txtUserName.setPlaceholder("User Name");
+		txtUserName.setBounds(75, 150, 100, 30);
 		pnlLogin.add(txtUserName);
 
 		// -----------------Password--------------------------
 
 		lblPassword = new JLabel("Password:");
 		lblPassword.setBounds(new Rectangle(0, 200, 70, 30));
-		pnlLogin.add(lblPassword);
+		//pnlLogin.add(lblPassword);
 
-		txtpassword = new JPasswordField(25);
+		txtpassword = new HintedPasswordField(20, "Password");
 		txtpassword.setEchoChar('*');
-		txtpassword.setBounds(new Rectangle(100, 200, 100, 30));
+		txtpassword.setBounds(new Rectangle(75, 200, 100, 30));
 		pnlLogin.add(txtpassword);
 
 		// -----------------CheckBox--------------------------
 
 		chbRememberpass = new JCheckBox("Lưu tên đăng nhập");
-		chbRememberpass.setBounds(new Rectangle(50, 250, 230, 30));
+		chbRememberpass.setBounds(new Rectangle(60, 250, 230, 30));
 		pnlLogin.add(chbRememberpass);
 		chbRememberpass.setOpaque(false);
 
 		chbHidden = new JCheckBox("Đăng nhập ẩn");
-		chbHidden.setBounds(new Rectangle(50, 280, 230, 30));
+		chbHidden.setBounds(new Rectangle(60, 280, 230, 30));
 		pnlLogin.add(chbHidden);
 		chbHidden.setOpaque(false);
 

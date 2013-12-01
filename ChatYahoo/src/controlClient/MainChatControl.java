@@ -1,5 +1,7 @@
 package controlClient;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
@@ -49,6 +51,27 @@ public class MainChatControl {
 					view.updateEnter();
 
 				}
+			}
+		});
+		view.addSendListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				User userA = view.getUserA();
+				User userB = view.getUserB();
+				String textsend = view.getMsg();
+				Calendar cal = Calendar.getInstance();
+		    	cal.getTime();
+		    	SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+		    	System.out.println(sdf.format(cal.getTime()));
+		    	String time = String.valueOf(sdf.format(cal.getTime()));
+				ChatHistory history = new ChatHistory(textsend, time, userA, userB, userA);
+				Message msg = new Message(Setting.REQUEST_CHAT, history, userA.getUserName(), userB.getUserName());
+				sendMessage(msg);
+				System.out.println(textsend);
+				System.out.println("chat");
+				view.updateEnter();
 			}
 		});
 	}

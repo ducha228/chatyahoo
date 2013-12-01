@@ -24,7 +24,7 @@ public class LoginControl {
 
 	Connection con;
 	LoginView logInView;
-
+	Socket mySocket = null;
 	public LoginControl() {
 		// TODO Auto-generated constructor stub
 	}
@@ -48,7 +48,7 @@ public class LoginControl {
 					ObjectInputStream ois = new ObjectInputStream(mySocket
 							.getInputStream());
 					oos.writeObject(msg);
-					ClientUser cu = new ClientUser(ois, oos, msg, logInView);
+					ClientUser cu = new ClientUser(mySocket,ois, oos, msg, logInView);
 				} catch (Exception e) { 
 					// TODO Auto-generated catch block
 					e.printStackTrace();

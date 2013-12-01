@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.Socket;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -28,6 +29,7 @@ public class ClientUser extends Thread {
 
 	ObjectInputStream ois;
 	ObjectOutputStream oos;
+	Socket mySocket;
 	Message message;
 	LoginView view;
 	MainViewYahoo mainviewYh;
@@ -37,9 +39,10 @@ public class ClientUser extends Thread {
 	Vector<MainChat> vecMainChatB;
 	public static Vector<ChatHistory> vecChat;
 	public Vector<SmileIcon> smileiconlist;
-	public ClientUser(ObjectInputStream ois, ObjectOutputStream oos,
+	public ClientUser(Socket mySocket,ObjectInputStream ois, ObjectOutputStream oos,
 			Message message, LoginView view) {
 		super();
+		this.mySocket = mySocket;
 		this.ois = ois;
 		this.oos = oos;
 		this.message = message;
@@ -168,7 +171,7 @@ public class ClientUser extends Thread {
 					mainviewYh = new MainViewYahoo(user);
 
 					mainviewYh.setVisible(true);
-					MainViewControl mvcontrol = new MainViewControl(mainviewYh,
+					MainViewControl mvcontrol = new MainViewControl(mySocket,mainviewYh,
 							ois, oos);
 					view.setVisible(false);
 					Message message = new Message(Setting.REQUEST_AVATAR, user,
@@ -197,6 +200,12 @@ public class ClientUser extends Thread {
 			case Setting.RESPNONSE_ALL_ONLINE:
 				Vector<String> vec = (Vector<String>) msg.getObj();
 				mainviewYh.UpdatelistOnline(vec);
+//				try {
+//					mySocket.close();
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
 				break;
 			case Setting.RESPONSE_ACCESS_DATABASE:
 				Message msgAResponeAcess = recieveMsg();
@@ -285,7 +294,7 @@ public class ClientUser extends Thread {
 			case Setting.REQUEST_ACCEPTADDFRIEND:
 				int dialogButton = JOptionPane.YES_NO_OPTION;
 				int dialogResult = JOptionPane.showConfirmDialog(null, "Bạn nhận được thông báo kết bạn từ " + msg.getSender(),
-						"Title on Box", dialogButton);
+						"Confirm Friend", dialogButton);
 				if (dialogResult == 0)
 					sendMessage(new Message(Setting.RESPONSE_ACCEPTADDFRIEND, msg, msg.getRecipient(), msg.getSender()));
 				else
