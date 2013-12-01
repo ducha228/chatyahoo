@@ -19,6 +19,7 @@ import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -42,6 +43,7 @@ public class MainViewYahoo extends JFrame {
 	private JList<String> listFriends;
 	private JLabel lblBanner;
 	private DefaultListModel dlm;
+	JComboBox<String> cbbUserName;
 	private User user;
 	private Image avatar;
 	public MainViewYahoo(User user) {
@@ -77,7 +79,11 @@ public class MainViewYahoo extends JFrame {
 		lblUserName.setBounds(80, 10, 150, 30);
 		lblUserName.setHorizontalAlignment(SwingConstants.CENTER);
 		lblUserName.setForeground(Color.red);
-		pnlChat.add(lblUserName);
+		//pnlChat.add(lblUserName);
+		cbbUserName = new JComboBox<>();
+		cbbUserName.addItem(user.getUserName());
+		cbbUserName.addItem("Online");
+		cbbUserName.addItem("Offline");
 
 		// --------------------------------status---------------------------------
 
@@ -128,6 +134,14 @@ public class MainViewYahoo extends JFrame {
 		this.setContentPane(pnlChat);
 		this.pack();
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
+	
+	public String getInforAcombobox() {
+		return (String) cbbUserName.getSelectedItem();
+	}
+	
+	public void ChangeItemStatement(ActionListener act) {
+		cbbUserName.addActionListener(act);
 	}
 	
 	public User getUser() {
