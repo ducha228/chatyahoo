@@ -10,6 +10,8 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.imageio.ImageIO;
@@ -17,6 +19,7 @@ import javax.imageio.ImageIO;
 import model.ChatHistory;
 import model.Message;
 import model.Setting;
+import model.SmileIcon;
 import model.User;
 import controlClient.ImageManager;
 import controlRMI.RMILoginInterface;
@@ -197,16 +200,21 @@ public class ClientConnect extends Thread {
 					break;
 				case Setting.REQUEST_AVATAR:
 					user = (User) msg.getObj();
+					Dictionary<String, String> dic = new Hashtable<String,String>();
 					Message avatarMessage = new Message();
 					avatarMessage.setType(Setting.RESPONSE_AVATAR);
-					File file = new File(user.getUserName() + ".jpg");
-					BufferedImage bimg = null; 
-					if (file.exists()) {
-						bimg = ImageIO.read(new File(user.getUserName() + ".jpg"));
-						avatarMessage.setObj(ImageManager.encodeToString(bimg, "jpg"));
-					} else {
-						avatarMessage.setObj("NO_IMG");
+					Vector<User> userList = rmiServer.listUser();
+					for (User usr:userList) {
+						File file = new File(usr.getUserName() + ".jpg");
+						BufferedImage bimg = null; 
+						if (file.exists()) {
+							bimg = ImageIO.read(file);
+							dic.put(usr.getUserName(), ImageManager.encodeToString(bimg, "jpg"));
+						} else {
+							dic.put(usr.getUserName(), "NO_IMG");
+						}
 					}
+					avatarMessage.setObj(dic);
 					avatarMessage.setSender(msg.getSender());
 					avatarMessage.setRecipient(msg.getRecipient());
 					sendMessage(avatarMessage);
@@ -214,8 +222,17 @@ public class ClientConnect extends Thread {
 				case Setting.REQUEST_UPLOAD_IMAGE:
 					String imagestr = (String) msg.getObj();
 					BufferedImage bufferedImage = ImageManager.decodeToImage(imagestr);
+					System.out.println(msg.getSender());
 					File file2 = new File(msg.getSender() + ".jpg");
 					ImageIO.write(bufferedImage, "jpg", file2);
+					break;
+				case Setting.REQUEST_SMILE_ICON:
+					Vector<SmileIcon> smileList = rmiServer.listSmileIcon();
+					System.out.println("smilelist size: "+smileList.size());
+					Message smileMessage = new Message();
+					smileMessage.setType(Setting.RESPONSE_SMILE_ICON);
+					smileMessage.setObj(smileList);
+					sendMessage(smileMessage);
 					break;
 				default:
 					break;

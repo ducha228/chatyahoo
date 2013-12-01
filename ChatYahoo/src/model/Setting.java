@@ -29,4 +29,6 @@ public class Setting implements Serializable {
 	public static final int RESPONSE_AVATAR = 19;
 	public static final int REQUEST_ADDFRIEND = 20;
 	public static final int RESPONSE_ADDFRIEND = 21;
+	public static final int REQUEST_SMILE_ICON = 22;
+	public static final int RESPONSE_SMILE_ICON = 23;
 }

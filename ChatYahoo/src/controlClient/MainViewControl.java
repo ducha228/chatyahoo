@@ -63,12 +63,13 @@ public class MainViewControl {
 			}
 		});
 		mainviewyh.addFriendAction(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				AddFriend viewaddfriend = new AddFriend(mainviewyh.getUser());
-				AddFriendColtrol controlAddfriend = new AddFriendColtrol(viewaddfriend, ois, oos);
+				AddFriendColtrol controlAddfriend = new AddFriendColtrol(
+						viewaddfriend, ois, oos);
 				viewaddfriend.setVisible(true);
 			}
 		});
@@ -78,54 +79,58 @@ public class MainViewControl {
 				Message msgout = new Message(Setting.REQUEST_SIGNOUT, userOut,
 						userOut.getUserName(), null);
 				sendMessage(msgout);
+
 			}
 		});
 		mainviewyh.addChooseAvatar(new MouseListener() {
-			
+
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 			@Override
 			public void mousePressed(MouseEvent e) {
 				// TODO Auto-generated method stub
 				if (e.getClickCount() == 2) {
 					File file = mainviewyh.showAvatarChooser();
-					BufferedImage bimg;
-					try {
-						bimg = ImageIO.read(file);
-						mainviewyh.setAvatar(bimg);
-						
-						Message message = new Message(Setting.REQUEST_UPLOAD_IMAGE,
-								ImageManager.encodeToString(bimg, "jpg"),
-								mainviewyh.getUserNameA(), 
-								mainviewyh.getUserNameA());
-						sendMessage(message);
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
+					if (file != null) {
+						BufferedImage bimg;
+						try {
+							bimg = ImageIO.read(file);
+							mainviewyh.setAvatar(bimg);
+							System.out.println(mainviewyh.getUserNameA());
+							Message message = new Message(
+									Setting.REQUEST_UPLOAD_IMAGE, ImageManager
+											.encodeToString(bimg, "jpg"),
+									mainviewyh.getUserNameA(), mainviewyh
+											.getUserNameA());
+							sendMessage(message);
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 					}
 				}
 			}
-			
+
 			@Override
 			public void mouseExited(MouseEvent e) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 			@Override
 			public void mouseEntered(MouseEvent e) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				// TODO Auto-generated method stub
-				
+
 			}
 		});
 

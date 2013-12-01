@@ -6,6 +6,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.imageio.ImageIO;
@@ -18,6 +21,7 @@ import view.MainViewYahoo;
 import model.ChatHistory;
 import model.Message;
 import model.Setting;
+import model.SmileIcon;
 import model.User;
 
 public class ClientUser extends Thread {
@@ -32,7 +36,7 @@ public class ClientUser extends Thread {
 	Vector<MainChat> vecMainchatA;
 	Vector<MainChat> vecMainChatB;
 	public static Vector<ChatHistory> vecChat;
-
+	public Vector<SmileIcon> smileiconlist;
 	public ClientUser(ObjectInputStream ois, ObjectOutputStream oos,
 			Message message, LoginView view) {
 		super();
@@ -43,6 +47,7 @@ public class ClientUser extends Thread {
 		vecChat = new Vector<>();
 		vecMainchatA = new Vector<>();
 		vecMainChatB = new Vector<>();
+		smileiconlist = new Vector<>();
 		this.start();
 	}
 
@@ -57,17 +62,20 @@ public class ClientUser extends Thread {
 
 	public boolean testMainChatandHistory(ChatHistory history, MainChat view) {
 		User userBMainChat = view.getUserB();
-		if(history.getUserSender().getUserName().equals(userBMainChat.getUserName()))
+		if (history.getUserSender().getUserName()
+				.equals(userBMainChat.getUserName()))
 			return true;
 		return false;
 	}
+
 	public MainChat searchMainChat(ChatHistory hitorytmp, Vector<MainChat> vec) {
 		for (MainChat view : vec) {
-			if(testMainChatandHistory(hitorytmp, view))
-			return view;
+			if (testMainChatandHistory(hitorytmp, view))
+				return view;
 		}
 		return null;
 	}
+
 	public Message recieveMsg() {
 		Message msg = null;
 		try {
@@ -112,29 +120,30 @@ public class ClientUser extends Thread {
 		return false;
 	}
 
-//	public void receiveImage(String fileName) {
-//		try {
-//			BufferedImage img = ImageIO.read(ImageIO
-//					.createImageInputStream(ois));
-//			
-//			File file = new File(fileName + ".jpg");
-//			ImageIO.write(img, "jpg", file);
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
-//
-//	public void sendImage(String fileName) {
-//		try {
-//			BufferedImage bimg = ImageIO.read(new File(fileName + ".jpg"));
-//			ImageIO.write(bimg, "JPG", oos);
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
+	// public void receiveImage(String fileName) {
+	// try {
+	// BufferedImage img = ImageIO.read(ImageIO
+	// .createImageInputStream(ois));
+	//
+	// File file = new File(fileName + ".jpg");
+	// ImageIO.write(img, "jpg", file);
+	// } catch (IOException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }
+	// }
+	//
+	// public void sendImage(String fileName) {
+	// try {
+	// BufferedImage bimg = ImageIO.read(new File(fileName + ".jpg"));
+	// ImageIO.write(bimg, "JPG", oos);
+	// } catch (IOException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }
+	// }
 	public void run() {
+		Dictionary<String, String> dic = new Hashtable<String, String>();
 		while (true) {
 			Message msg = recieveMsg();
 			int flag = msg.getType();
@@ -155,14 +164,15 @@ public class ClientUser extends Thread {
 
 					Object obj = msg.getObj();
 					User user = (User) obj;
-					
+
 					mainviewYh = new MainViewYahoo(user);
-					
+
 					mainviewYh.setVisible(true);
 					MainViewControl mvcontrol = new MainViewControl(mainviewYh,
 							ois, oos);
 					view.setVisible(false);
-					Message message = new Message(Setting.REQUEST_AVATAR, user, user.getUserName(), null);
+					Message message = new Message(Setting.REQUEST_AVATAR, user,
+							user.getUserName(), null);
 					System.out.println("Request avatar successfully");
 					sendMessage(message);
 				} else {
@@ -171,14 +181,18 @@ public class ClientUser extends Thread {
 				break;
 			case Setting.RESPONSE_AVATAR:
 				System.out.println("Response avatar successfully");
-				String imageStr = (String) msg.getObj();
-				System.out.println(imageStr);
+				dic = (Dictionary<String, String>) msg.getObj();
+				String imageStr = dic.get(mainviewYh.getUser().getUserName());
 				if (!imageStr.equals("NO_IMG")) {
 					BufferedImage avatar = ImageManager.decodeToImage(imageStr);
 					mainviewYh.setAvatar(avatar);
 				} else {
 					mainviewYh.setDefaultAvatar();
 				}
+				message = new Message();
+				message.setType(Setting.REQUEST_SMILE_ICON);
+				sendMessage(message);
+				System.out.println("request smile icon successfully");
 				break;
 			case Setting.RESPNONSE_ALL_ONLINE:
 				Vector<String> vec = (Vector<String>) msg.getObj();
@@ -196,22 +210,32 @@ public class ClientUser extends Thread {
 						mainChatviewA, ois, oos);
 				System.out.println("size Vec = " + vecMainchatA.size());
 				vecMainchatA.add(mainChatviewA);
-				for (MainChat view : vecMainchatA){
+				for (MainChat view : vecMainchatA) {
 					System.out.println(view.getUserB().getUserName());
 				}
-				System.out.println("userManviewA: "+mainChatviewA.getUserA().getUserName());
+				System.out.println("userManviewA: "
+						+ mainChatviewA.getUserA().getUserName());
 				ChatHistory chathistory = new ChatHistory();
 				chathistory.setUserA(userBResponeAcess);
 				chathistory.setUserB(userAResponeAcess);
 				if (testChatting(chathistory) == false) {
 					vecChat.add(chathistory);
 				}
+				String imgstrAViewA = dic.get(mainChatviewA.getUserA().getUserName());
+				String imgstrBViewA = dic.get(mainChatviewA.getUserB().getUserName());
+				if (!imgstrAViewA.equals("NO_IMG")) {
+					mainChatviewA.setAvatarA(ImageManager.decodeToImage(imgstrAViewA));
+				}
+				if (!imgstrBViewA.equals("NO_IMG")) {
+					mainChatviewA.setAvatarB(ImageManager.decodeToImage(imgstrBViewA));
+				}
+				mainChatviewA.setSmileIcon(smileiconlist);
 				break;
 			case Setting.RESPONSE_CHAT:
 				ChatHistory history = (ChatHistory) msg.getObj();
 				System.out.println(vecChat.size());
 				if (testChatting(history)) {
-					
+
 					if (mainChatviewB == null) {
 						MainChat mainA = searchMainChat(history, vecMainchatA);
 						mainA.appendChat(history.getUserA(),
@@ -225,17 +249,33 @@ public class ClientUser extends Thread {
 					vecChat.add(history);
 					mainChatviewB = new MainChat(history.getUserB(),
 							history.getUserA());
+					mainChatviewB.setSmileIcon(smileiconlist);
 					mainChatviewB.setVisible(true);
 					mainChatviewB.appendChat(history.getUserA(),
 							history.getMessage());
 					MainChatControl mainChatcontrolB = new MainChatControl(
 							mainChatviewB, ois, oos);
 					System.out.println("tung2");
+					String imgstrAViewB = dic.get(mainChatviewB.getUserA().getUserName());
+					String imgstrBViewB = dic.get(mainChatviewB.getUserB().getUserName());
+					if (!imgstrAViewB.equals("NO_IMG")) {
+						mainChatviewB.setAvatarA(ImageManager.decodeToImage(imgstrAViewB));
+					}
+					if (!imgstrBViewB.equals("NO_IMG")) {
+						mainChatviewB.setAvatarB(ImageManager.decodeToImage(imgstrBViewB));
+					}
+					
 				}
+				break;
+			case Setting.RESPONSE_SMILE_ICON:
+				@SuppressWarnings("unchecked")
+				Vector<SmileIcon> obj = (Vector<SmileIcon>) msg.getObj();
+				smileiconlist = obj;
 				break;
 			case Setting.RESPONSE_USER_OFFLINE:
 				User useroff = (User) msg.getObj();
-				JOptionPane.showMessageDialog(null, useroff.getUserName()+" da off line");
+				JOptionPane.showMessageDialog(null, useroff.getUserName()
+						+ " da off line");
 				break;
 			default:
 				break;
