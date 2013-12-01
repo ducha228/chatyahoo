@@ -8,10 +8,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Vector;
 
 import model.ChatHistory;
 import model.Message;
+import model.SmileIcon;
 import model.User;
 import controlClient.DBConnection;
 
@@ -236,6 +238,7 @@ public class RMILoginServerControl extends UnicastRemoteObject implements
 		Message tmp1 = (Message) tmp.getObj();
 		System.out.println(tmp.getObj());
 		String strUserAdd = (String) tmp1.getSender();
+
 		String strUserWanttoAdd = msg.getSender();
 		User userAdd = searchUser(strUserAdd);
 		User userWanttoAdd = searchUser(strUserWanttoAdd);
@@ -253,7 +256,6 @@ public class RMILoginServerControl extends UnicastRemoteObject implements
 			pre.executeUpdate();
 		} catch (Exception e) {
 			// TODO: handle exception
-			e.printStackTrace();
 		}
 	}
 
@@ -304,5 +306,50 @@ public class RMILoginServerControl extends UnicastRemoteObject implements
 			// TODO: handle exception
 			e.printStackTrace();
 		}
+	}
+	@Override
+	public Vector<User> listUser() throws RemoteException {
+		// TODO Auto-generated method stub
+		Vector<User> userList = new Vector<>();
+		String sql = "select * from tbluser";
+		Connection conn = DBConnection.getConn();
+		Statement stm;
+		try {
+			stm = conn.createStatement();
+			ResultSet rs = stm.executeQuery(sql);
+			while(rs.next()) {
+				User user = new User();
+				user.setUserName(rs.getString("username"));
+				user.setUserFirstName(rs.getString("userFirstName"));
+				user.setUserLastName(rs.getString("userLastName"));
+				
+				userList.add(user);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return userList;
+	}
+	
+	public Vector<SmileIcon> listSmileIcon() {
+		Vector<SmileIcon> smileList = new Vector<>();
+		String sql = "select * from tblsmileicon";
+		Connection conn = DBConnection.getConn();
+		Statement stm;
+		try {
+			stm = conn.createStatement();
+			ResultSet rs = stm.executeQuery(sql);
+			while(rs.next()) {
+				SmileIcon smileIcon = new SmileIcon(rs.getString("iconid"), rs.getString("iconImage")
+						, rs.getString("shortKey"), rs.getString("iconName"));
+				smileList.add(smileIcon);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return smileList;
 	}
 }
