@@ -76,6 +76,13 @@ public class MainViewControl {
 				Message msgout = new Message(Setting.REQUEST_SIGNOUT, userOut,
 						userOut.getUserName(), null);
 				sendMessage(msgout);
+				try {
+					ois.close();
+					oos.close();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		});
 	}

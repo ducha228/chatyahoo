@@ -79,21 +79,21 @@ public class ClientConnect extends Thread {
 		}
 	}
 
-//	public Image receiveImage() {
-//		try {
-//			BufferedImage img = ImageIO.read(ImageIO
-//					.createImageInputStream(ois));
-//			Image image = img;
-//			File file = new File(fileName + "." + ext);
-//			BufferedImage image = toBufferedImage(file);
-//			ImageIO.write(image, ext, file);
-//			return image;
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		return null;
-//	}
+	// public Image receiveImage() {
+	// try {
+	// BufferedImage img = ImageIO.read(ImageIO
+	// .createImageInputStream(ois));
+	// Image image = img;
+	// File file = new File(fileName + "." + ext);
+	// BufferedImage image = toBufferedImage(file);
+	// ImageIO.write(image, ext, file);
+	// return image;
+	// } catch (IOException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }
+	// return null;
+	// }
 
 	public void sendImage(Image image) {
 		try {
@@ -125,16 +125,19 @@ public class ClientConnect extends Thread {
 						msg.setType(Setting.RESPONSE_LOGIN);
 						sendMessage(msg);
 						sendString(result);
-						for (String string: serverTCP.getVecOnline()) {
+						for (String string : serverTCP.getVecOnline()) {
 							Vector<String> vec = new Vector<>();
-							for (String string2 : rmiServer.vecFriend(rmiServer.searchUser(string))) {
+							for (String string2 : rmiServer.vecFriend(rmiServer
+									.searchUser(string))) {
 								if (rmiServer.searchUser(string2).getIsOnline() == 0) {
-									vec.add(string2 + "       -        offline"); 
+									vec.add(string2 + "       -        offline");
 								} else {
 									vec.add(string2 + "       -        online");
 								}
 							}
-							serverTCP.sendtoUser(string, new Message(Setting.RESPNONSE_ALL_ONLINE, vec, null, null));
+							serverTCP.sendtoUser(string, new Message(
+									Setting.RESPNONSE_ALL_ONLINE, vec, null,
+									null));
 						}
 					} catch (RemoteException e) {
 						// TODO Auto-generated catch block
@@ -207,29 +210,34 @@ public class ClientConnect extends Thread {
 					User userout = (User) msg.getObj();
 					userout = rmiServer.searchUser(userout.getUserName());
 					rmiServer.updateOnl(userout, 0);
-					for (String string: serverTCP.getVecOnline()) {
+					for (String string : serverTCP.getVecOnline()) {
 						Vector<String> vec = new Vector<>();
-						for (String string2 : rmiServer.vecFriend(rmiServer.searchUser(string))) {
+						for (String string2 : rmiServer.vecFriend(rmiServer
+								.searchUser(string))) {
 							if (rmiServer.searchUser(string2).getIsOnline() == 0) {
-								vec.add(string2 + "       -        offline"); 
+								vec.add(string2 + "       -        offline");
 							} else {
 								vec.add(string2 + "       -        online");
 							}
 						}
-						serverTCP.sendtoUser(string, new Message(Setting.RESPNONSE_ALL_ONLINE, vec, null, null));
+						serverTCP.sendtoUser(string, new Message(
+								Setting.RESPNONSE_ALL_ONLINE, vec, null, null));
 					}
 					serverTCP.sendAllUserOffline(userout);
 					break;
 				case Setting.REQUEST_ADDFRIEND:
 					String userNameUserSend = (String) msg.getSender();
 					String userNameFriendAdd = (String) msg.getObj();
-					
+
 					if (rmiServer.searchUser(userNameFriendAdd) == null) {
 						String result = "NO";
-						serverTCP.sendtoUser(msg.getSender(), new Message(Setting.RESPONSE_ADDFRIEND, result, null, userNameUserSend));
-					}
-					else{
-						serverTCP.sendtoUser(userNameFriendAdd, new Message(Setting.REQUEST_ACCEPTADDFRIEND, msg, userNameUserSend, userNameFriendAdd));
+						serverTCP.sendtoUser(msg.getSender(), new Message(
+								Setting.RESPONSE_ADDFRIEND, result, null,
+								userNameUserSend));
+					} else {
+						serverTCP.sendtoUser(userNameFriendAdd, new Message(
+								Setting.REQUEST_ACCEPTADDFRIEND, msg,
+								userNameUserSend, userNameFriendAdd));
 					}
 					break;
 				case Setting.RESPONSE_DECLINEADDFRIEND:
@@ -238,6 +246,19 @@ public class ClientConnect extends Thread {
 				case Setting.RESPONSE_ACCEPTADDFRIEND:
 					rmiServer.insertFriendList(msg);
 					serverTCP.sendtoUser(msg.getRecipient(), msg);
+					for (String string : serverTCP.getVecOnline()) {
+						Vector<String> vec = new Vector<>();
+						for (String string2 : rmiServer.vecFriend(rmiServer
+								.searchUser(string))) {
+							if (rmiServer.searchUser(string2).getIsOnline() == 0) {
+								vec.add(string2 + "       -        offline");
+							} else {
+								vec.add(string2 + "       -        online");
+							}
+						}
+						serverTCP.sendtoUser(string, new Message(
+								Setting.RESPNONSE_ALL_ONLINE, vec, null, null));
+					}
 					break;
 				default:
 					break;
